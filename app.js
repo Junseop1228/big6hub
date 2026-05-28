@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 require('dotenv').config();
+const { initDb } = require('./db');
 
 const app = express();
 
@@ -20,7 +21,8 @@ app.use(express.static('public'));
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+    await initDb();
     console.log(`Server is running on port ${PORT}`);
 });
 
