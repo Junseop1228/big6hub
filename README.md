@@ -5,10 +5,10 @@ Premier League Big 6 Information Hub
 > ITM519 Web Programming — SeoulTech 2026
 
 ## Team
-- Junsup Kim (lead)
+- Junseop Kim (lead)
 - Seongbin Lee
 - Geon Kim
-- Hyungdo Kim
+- Hyoungdo Kim
 
 ## Quick Start
 ```bash
