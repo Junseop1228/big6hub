@@ -1,4 +1,4 @@
-# Big6Hub — Git Operation Policy
+﻿# Big6Hub — Git Operation Policy
 
 > ITM519 Web Programming · SeoulTech 2026
 > This document defines the branch strategy, commit conventions, and PR/Issue/Project rules for the Big6Hub team.
@@ -190,7 +190,17 @@ Backlog → Todo → In Progress → In Review → Done
 
 ---
 
-## 8. Rules
+## 8. Branch Protection (main)
+
+The following rules are enforced on GitHub for the `main` branch:
+
+- Require a pull request before merging (direct push is blocked)
+- Require at least **1 approval** before merging
+- Do not allow bypassing the above settings (applies to admins too)
+
+---
+
+## 9. Rules
 
 - No direct push to `main`
 - Never commit `database.db`, `.env`, or `node_modules` (covered by `.gitignore`)
