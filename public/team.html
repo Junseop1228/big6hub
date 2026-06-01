@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team — Big6Hub</title>
+  <style>:root { --team-color: #333333; }</style>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth">
+      <a href="auth.html" class="btn-login">Log in</a>
+      <a href="auth.html" class="btn-signup">Sign up</a>
+    </div>
+  </nav>
+
+  <div class="team-header">
+    <div class="container">
+      <a href="index.html" class="back-link">← All teams</a>
+      <h1>Team Name</h1>
+      <nav class="team-tabs">
+        <a href="#" class="tab-link active" data-tab="home">Home</a>
+        <a href="#" class="tab-link" data-tab="information">Information</a>
+        <a href="#" class="tab-link" data-tab="seasons">Seasons</a>
+        <a href="#" class="tab-link" data-tab="players">Players</a>
+        <a href="#" class="tab-link" data-tab="trophies">Trophies</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="content">
+
+      <div id="home" class="tab-content active">
+        <p>Home</p>
+      </div>
+
+      <div id="information" class="tab-content">
+        <p>Information</p>
+      </div>
+
+      <div id="seasons" class="tab-content">
+        <p>Seasons</p>
+      </div>
+
+      <div id="players" class="tab-content">
+        <p>Players</p>
+      </div>
+
+      <div id="trophies" class="tab-content">
+        <p>Trophies</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/team.js"></script>
+</body>
+</html>
