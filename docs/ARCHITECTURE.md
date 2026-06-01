@@ -95,13 +95,17 @@ big6hub/
 │
 ├── public/             Static frontend files served directly by Express.
 │   ├── index.html      Home page
-│   ├── team.html       Club detail page
-│   ├── player.html     Player profile page
+│   ├── team.html       Club detail page — tab navigation (Home, Information, Seasons, Players, Trophies)
+│   ├── season.html     Season detail page — sidebar navigation (Summary, Squad, Match Results)
 │   ├── auth.html       Login / Register page
 │   ├── favorites.html  My favorites page
 │   ├── admin.html      Admin CRUD console
 │   ├── css/            Styling (tokens, layout, components, pages)
 │   └── js/             Client-side JS modules (api, session, home, team ...)
+│       ├── api.js      API fetch functions
+│       ├── team.js     
+│       ├── season.js   
+│       └── player.js 
 │
 ├── data/               Seed data files. Populated via API or manual input.
 ├── scripts/            Utility scripts (e.g., fetch data from external APIs).
