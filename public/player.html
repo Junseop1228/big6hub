@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Player — Big6Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth">
+      <a href="auth.html" class="btn-login">Log in</a>
+      <a href="auth.html" class="btn-signup">Sign up</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="player-header">
+      <a href="team.html" class="back-link">← Team Name</a>
+      <h1>Player Name</h1>
+      <nav class="profile-tabs">
+        <a href="#" class="tab-link active" data-tab="profile">Profile</a>
+        <a href="#" class="tab-link" data-tab="record">Record</a>
+        <a href="#" class="tab-link" data-tab="honours">Honours</a>
+      </nav>
+    </div>
+    <div class="content">
+      <div id="profile" class="tab-content active"><p>Profile</p></div>
+      <div id="record" class="tab-content"><p>Record</p></div>
+      <div id="honours" class="tab-content"><p>Honours</p></div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/player.js"></script>
+</body>
+</html>

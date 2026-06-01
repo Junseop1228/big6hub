@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Season — Big6Hub</title>
+  <style>:root { --team-color: #333333; }</style>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth">
+      <a href="auth.html" class="btn-login">Log in</a>
+      <a href="auth.html" class="btn-signup">Sign up</a>
+    </div>
+  </nav>
+
+  <div class="team-header">
+    <div class="container">
+      <a href="team.html" class="back-link">← Team Name</a>
+      <h1>Season</h1>
+    </div>
+  </div>
+
+  <div class="season-layout">
+    <nav class="side-nav">
+      <a href="#" class="side-link active" data-sec="summary">Summary</a>
+      <a href="#" class="side-link" data-sec="squad">Squad</a>
+      <a href="#" class="side-link" data-sec="matches">Match Results</a>
+    </nav>
+    <div class="side-content">
+      <div id="summary" class="sec active"><p>Summary</p></div>
+      <div id="squad" class="sec"><p>Squad</p></div>
+      <div id="matches" class="sec"><p>Match Results</p></div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/season.js"></script>
+</body>
+</html>
