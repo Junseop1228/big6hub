@@ -97,6 +97,7 @@ big6hub/
 │   ├── index.html      Home page
 │   ├── team.html       Club detail page — tab navigation (Home, Information, Seasons, Players, Trophies)
 │   ├── season.html     Season detail page — sidebar navigation (Summary, Squad, Match Results)
+│   ├── player.html     Player profile page
 │   ├── auth.html       Login / Register page
 │   ├── favorites.html  My favorites page
 │   ├── admin.html      Admin CRUD console
