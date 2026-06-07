@@ -163,8 +163,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 
 /* [player.html] header */
 .player-header { padding: 24px 0 0; border-bottom: 1px solid #ebebeb; margin-bottom: 4px; }
-.player-header .back-link { color: #767676; }
 .player-header h1 { font-size: 24px; font-weight: 800; margin: 8px 0 4px; }
+.player-header .meta { font-size: 13px; color: #ffffff; margin-bottom: 0; }
+.player-header .back-link { color: #ffffff; }
 
 /* [player.html] profile tabs */
 .profile-tabs { display: flex; margin-top: 8px; }
@@ -175,6 +176,15 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 }
 .profile-tabs a:hover { color: #222; }
 .profile-tabs a.active { color: #222; border-bottom-color: #222; }
+
+/* [player.html] favorites button */
+.player-header { position: relative; }
+.fav-wrap { position: absolute; top: 24px; right: 0; }
+.btn-fav {
+  padding: 10px 20px; border-radius: 20px; border: 1px solid #ddd;
+  background: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  color: #767676; cursor: not-allowed;
+}
 
 /* [global] responsive */
 @media (max-width: 768px) {
