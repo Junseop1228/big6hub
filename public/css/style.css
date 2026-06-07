@@ -190,7 +190,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 /* [auth.html] */
 .auth-page {
   min-height: calc(100vh - 56px);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
   padding: 40px 16px; background: #fafafa;
 }
 .auth-card {
@@ -198,8 +198,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   border-radius: 20px; padding: 40px;
   width: 100%; max-width: 420px;
 }
-.auth-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-.auth-subtitle { font-size: 13px; color: #767676; margin-bottom: 28px; }
+.auth-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; text-align: center; }
+.auth-subtitle { font-size: 13px; color: #767676; margin-bottom: 28px; text-align: center;}
 
 .auth-tabs {
   display: flex; background: #f5f5f5;
@@ -211,7 +211,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   font-family: inherit; font-size: 13px; font-weight: 600;
   color: #767676; border-radius: 9px; cursor: pointer;
 }
-.auth-tab.active { background: #fff; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.auth-tab[data-tab="login"].active { background: #fff; color: #222; }
+.auth-tab[data-tab="register"].active { background: #222; color: #fff; }
 
 .auth-form { display: none; flex-direction: column; gap: 14px; }
 .auth-form.active { display: flex; }
@@ -226,7 +227,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 
 .btn-submit {
   margin-top: 4px; padding: 12px; border: none; border-radius: 20px;
-  background: #222; color: #fff; font-family: inherit;
+  background: #610e84; color: #fff; font-family: inherit;
   font-size: 14px; font-weight: 700; cursor: pointer;
 }
 .btn-submit:hover { background: #000; }
