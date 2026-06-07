@@ -1,0 +1,887 @@
+openapi: 3.0.3
+
+info:
+  title: Big6Hub API
+  description: >
+    REST API for Big6Hub — a Premier League Big 6 clubs information hub.
+    Built for ITM519 Web Programming, SeoulTech 2026.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Register, login, and retrieve the authenticated user
+  - name: Teams
+    description: Premier League Big 6 club information
+  - name: Players
+    description: Player profiles and statistics
+  - name: Seasons
+    description: Season records per club
+  - name: Favorites
+    description: Authenticated user's saved favorites
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Security scheme — JWT Bearer token
+# ─────────────────────────────────────────────────────────────────────────────
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ── Auth ──────────────────────────────────────────────────────────────────
+    RegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: fan@big6hub.test
+        password:
+          type: string
+          minLength: 8
+          example: Secret123!
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: fan@big6hub.test
+        password:
+          type: string
+          example: Secret123!
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token — include as "Authorization: Bearer <token>"
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: fan@big6hub.test
+        role:
+          type: string
+          enum: [user, admin]
+          example: user
+
+    # ── Teams ─────────────────────────────────────────────────────────────────
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Arsenal
+        slug:
+          type: string
+          example: arsenal
+        stadium:
+          type: string
+          example: Emirates Stadium
+        city:
+          type: string
+          example: London
+        manager:
+          type: string
+          example: Mikel Arteta
+        logo_url:
+          type: string
+          example: /images/arsenal.png
+
+    TeamDetail:
+      allOf:
+        - $ref: '#/components/schemas/Team'
+        - type: object
+          properties:
+            trophies:
+              type: array
+              items:
+                $ref: '#/components/schemas/Trophy'
+            managers:
+              type: array
+              items:
+                $ref: '#/components/schemas/Manager'
+
+    TeamUpdateRequest:
+      type: object
+      properties:
+        stadium:
+          type: string
+        city:
+          type: string
+        manager:
+          type: string
+        logo_url:
+          type: string
+
+    Trophy:
+      type: object
+      properties:
+        id:
+          type: integer
+        competition:
+          type: string
+          example: Premier League
+        season:
+          type: string
+          example: 2003-04
+
+    Manager:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: Arsene Wenger
+        start_year:
+          type: integer
+          example: 1996
+        end_year:
+          type: integer
+          nullable: true
+          example: 2018
+        is_current:
+          type: integer
+          enum: [0, 1]
+          example: 0
+
+    # ── Players ───────────────────────────────────────────────────────────────
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        team_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bukayo Saka
+        position:
+          type: string
+          example: Forward
+        goals:
+          type: integer
+          example: 17
+        assists:
+          type: integer
+          example: 11
+        is_legend:
+          type: integer
+          enum: [0, 1]
+          example: 0
+
+    PlayerWriteRequest:
+      type: object
+      required: [team_id, name, position]
+      properties:
+        team_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bukayo Saka
+        position:
+          type: string
+          example: Forward
+        goals:
+          type: integer
+          example: 17
+        assists:
+          type: integer
+          example: 11
+        is_legend:
+          type: integer
+          enum: [0, 1]
+          example: 0
+
+    # ── Seasons ───────────────────────────────────────────────────────────────
+    Season:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        team_id:
+          type: integer
+          example: 1
+        season:
+          type: string
+          example: 2023-24
+        wins:
+          type: integer
+          example: 28
+        draws:
+          type: integer
+          example: 5
+        losses:
+          type: integer
+          example: 5
+        final_position:
+          type: integer
+          example: 2
+
+    SeasonWriteRequest:
+      type: object
+      required: [team_id, season]
+      properties:
+        team_id:
+          type: integer
+          example: 1
+        season:
+          type: string
+          example: 2023-24
+        wins:
+          type: integer
+          example: 28
+        draws:
+          type: integer
+          example: 5
+        losses:
+          type: integer
+          example: 5
+        final_position:
+          type: integer
+          example: 2
+
+    # ── Favorites ─────────────────────────────────────────────────────────────
+    Favorite:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        kind:
+          type: string
+          enum: [team, player]
+          example: team
+        target_id:
+          type: integer
+          example: 1
+
+    FavoriteRequest:
+      type: object
+      required: [kind, target_id]
+      properties:
+        kind:
+          type: string
+          enum: [team, player]
+          example: team
+        target_id:
+          type: integer
+          example: 1
+
+    # ── Error ─────────────────────────────────────────────────────────────────
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: UNAUTHORIZED
+            message:
+              type: string
+              example: Invalid or missing token
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────────────────────────────────────────
+paths:
+
+  # ── AUTH ────────────────────────────────────────────────────────────────────
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created — returns JWT token and user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error (missing field, invalid email, weak password)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Log in with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful — returns JWT token and user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Wrong email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get the currently authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Authenticated user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── TEAMS ────────────────────────────────────────────────────────────────────
+  /api/teams:
+    get:
+      tags: [Teams]
+      summary: List all Big 6 teams
+      responses:
+        '200':
+          description: Array of team objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+
+  /api/teams/{id}:
+    get:
+      tags: [Teams]
+      summary: Get a single team with trophies and managers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Team detail object including trophies and managers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamDetail'
+        '404':
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags: [Teams]
+      summary: Update a team's information (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamUpdateRequest'
+      responses:
+        '200':
+          description: Updated team object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Authenticated but not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── PLAYERS ──────────────────────────────────────────────────────────────────
+  /api/players:
+    get:
+      tags: [Players]
+      summary: List players — optionally filtered by team
+      parameters:
+        - name: team_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter players by team ID
+      responses:
+        '200':
+          description: Array of player objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+
+    post:
+      tags: [Players]
+      summary: Add a new player (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerWriteRequest'
+      responses:
+        '201':
+          description: Player created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/players/{id}:
+    get:
+      tags: [Players]
+      summary: Get a single player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Player object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '404':
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags: [Players]
+      summary: Update a player (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerWriteRequest'
+      responses:
+        '200':
+          description: Updated player object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags: [Players]
+      summary: Delete a player (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Player deleted — no body
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── SEASONS ──────────────────────────────────────────────────────────────────
+  /api/seasons:
+    get:
+      tags: [Seasons]
+      summary: List seasons — optionally filtered by team
+      parameters:
+        - name: team_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter seasons by team ID
+      responses:
+        '200':
+          description: Array of season objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Season'
+
+    post:
+      tags: [Seasons]
+      summary: Add a new season record (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonWriteRequest'
+      responses:
+        '201':
+          description: Season created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/seasons/{id}:
+    get:
+      tags: [Seasons]
+      summary: Get a single season record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Season object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        '404':
+          description: Season not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags: [Seasons]
+      summary: Update a season record (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonWriteRequest'
+      responses:
+        '200':
+          description: Updated season object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Season not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags: [Seasons]
+      summary: Delete a season record (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Season deleted — no body
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Season not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── FAVORITES ─────────────────────────────────────────────────────────────────
+  /api/favorites:
+    get:
+      tags: [Favorites]
+      summary: List the authenticated user's favorites
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array of favorite objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Favorite'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags: [Favorites]
+      summary: Add a favorite (team or player)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+      responses:
+        '201':
+          description: Favorite created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/favorites/{id}:
+    delete:
+      tags: [Favorites]
+      summary: Remove a favorite
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Favorite deleted — no body
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: This favorite belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Favorite not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
