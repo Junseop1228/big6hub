@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign in · Big6Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .auth-page {
+      min-height: calc(100vh - 56px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 16px;
+      background: #f7f7f7;
+    }
+    .auth-box {
+      background: #fff; border: 1px solid #ebebeb; border-radius: 20px;
+      padding: 40px 40px 36px; width: 100%; max-width: 400px;
+    }
+    .auth-box h2 {
+      font-size: 22px; font-weight: 800; margin-bottom: 24px; text-align: center;
+    }
+    .auth-tab-bar {
+      display: flex; border-bottom: 1px solid #ebebeb; margin-bottom: 28px;
+    }
+    .auth-tab-link {
+      flex: 1; text-align: center;
+      padding: 10px 0; font-size: 14px; font-weight: 600;
+      color: #767676; text-decoration: none; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      background: none; border-left: none; border-right: none; border-top: none;
+      font-family: inherit;
+    }
+    .auth-tab-link.active { color: #222; border-bottom-color: #222; }
+
+    .auth-tab-panel { display: none; }
+    .auth-tab-panel.active { display: block; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 700;
+      color: #767676; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .form-group input {
+      width: 100%; padding: 11px 14px;
+      border: 1px solid #ddd; border-radius: 10px;
+      font-size: 14px; font-family: inherit; color: #222;
+      outline: none; transition: border-color 0.15s;
+    }
+    .form-group input:focus { border-color: #610e84; }
+
+    .auth-error {
+      display: none;
+      font-size: 13px; color: #c13515;
+      background: #fff5f5; border: 1px solid #fcd5cc;
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;
+    }
+
+    .btn-submit {
+      width: 100%; padding: 12px;
+      background: #222; color: #fff; border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: background 0.15s;
+      margin-top: 4px;
+    }
+    .btn-submit:hover { background: #444; }
+
+    .auth-switch {
+      text-align: center; margin-top: 20px;
+      font-size: 13px; color: #767676;
+    }
+    .auth-switch button {
+      background: none; border: none; color: #610e84;
+      font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
+      .auth-box { padding: 28px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth">
+      <a href="auth.html" class="btn-login">Log in</a>
+      <a href="auth.html" class="btn-signup">Sign up</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-box">
+      <h2>Welcome to Big6Hub</h2>
+
+      <div class="auth-tab-bar">
+        <button class="auth-tab-link active" data-tab="panel-login">Log in</button>
+        <button class="auth-tab-link" data-tab="panel-signup">Sign up</button>
+      </div>
+
+      <!-- Login panel -->
+      <div class="auth-tab-panel active" id="panel-login">
+        <div class="auth-error" id="login-error"></div>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password"/>
+          </div>
+          <button type="submit" class="btn-submit">Log in</button>
+        </form>
+        <div class="auth-switch">
+          Don't have an account?
+          <button onclick="document.querySelector('[data-tab=panel-signup]').click()">Sign up</button>
+        </div>
+      </div>
+
+      <!-- Sign up panel -->
+      <div class="auth-tab-panel" id="panel-signup">
+        <div class="auth-error" id="signup-error"></div>
+        <form id="signup-form">
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Min. 8 characters" autocomplete="new-password"/>
+          </div>
+          <div class="form-group">
+            <label for="signup-confirm">Confirm password</label>
+            <input type="password" id="signup-confirm" placeholder="••••••••" autocomplete="new-password"/>
+          </div>
+          <button type="submit" class="btn-submit">Create account</button>
+        </form>
+        <div class="auth-switch">
+          Already have an account?
+          <button onclick="document.querySelector('[data-tab=panel-login]').click()">Log in</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
