@@ -26,6 +26,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .container { max-width: 1120px; margin: 0 auto; padding: 0 40px; }
 .content { padding: 32px 0 80px; }
 
+/* [global] section-title / info */
+.section-title { font-size: 15px; font-weight: 700; margin: 24px 0 12px; }
+.section-title:first-child { margin-top: 0; }
+.info-label { color: #767676; width: 130px; }
+.info-text { color: #444; line-height: 1.7; }
+
 /* [global] table */
 .tbl { width: 100%; border-collapse: collapse; }
 .tbl th {
