@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Player — Big6Hub</title>
+  <style>:root { --team-color: #333333; }</style>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth">
+      <a href="auth.html" class="btn-login">Log in</a>
+      <a href="auth.html" class="btn-signup">Sign up</a>
+    </div>
+  </nav>
+
+  <div class="team-header">
+    <div class="container">
+        <div class="player-header">
+          <div class="player-header-left">
+            <a href="team.html" class="back-link">← Team Name</a>
+            <h1>Player Name</h1>
+            <p class="meta">Position · Team Name</p>
+            <nav class="profile-tabs">
+              <a href="#" class="tab-link active" data-tab="profile">Profile</a>
+              <a href="#" class="tab-link" data-tab="record">Record</a>
+              <a href="#" class="tab-link" data-tab="honours">Honours</a>
+            </nav>
+          </div>
+
+          <div class="player-header-right">
+            <div class="fav-wrap">
+              <button class="btn-fav" disabled>☆ Add to Favorites (login required)</button>
+            </div>
+            <div class="stat-row">
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Goals</div></div>
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Assists</div></div>
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Apps</div></div>
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Legend</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="content">
+
+      <div id="profile" class="tab-content active">
+        <div class="section-title">Profile</div>
+        <table class="tbl">
+          <tbody>
+            <tr><td class="info-label">Name</td><td>—</td></tr>
+            <tr><td class="info-label">Position</td><td>—</td></tr>
+            <tr><td class="info-label">Club</td><td><a href="team.html">—</a></td></tr>
+            <tr><td class="info-label">Legend</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="record" class="tab-content">
+        <div class="section-title">Record</div>
+        <table class="tbl">
+          <thead><tr><th>Season</th><th>Club</th><th>Goals</th><th>Assists</th><th>Apps</th></tr></thead>
+          <tbody>
+            <tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="honours" class="tab-content">
+        <div class="section-title">Honours</div>
+        <table class="tbl">
+          <thead><tr><th>Competition</th><th>Season</th></tr></thead>
+          <tbody>
+            <tr><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      
+    </div>      
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/player.js"></script>
+</body>
+</html>
