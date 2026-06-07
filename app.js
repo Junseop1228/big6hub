@@ -16,7 +16,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:'],
+        imgSrc: ["'self'", 'data:', 'https://crests.football-data.org'],
       },
     },
   })
@@ -30,11 +30,11 @@ const swaggerDoc = YAML.load('./openapi.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 // API routers
-app.use('/api/teams', require('./routes/teams'));
-app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/players', require('./routes/players'));
-// app.use('/api/seasons', require('./routes/seasons'));
-// app.use('/api/favorites', require('./routes/favorites'));
+app.use('/api/auth',      require('./routes/auth'));
+app.use('/api/teams',     require('./routes/teams'));
+app.use('/api/players',   require('./routes/players'));
+app.use('/api/seasons',   require('./routes/seasons'));
+app.use('/api/favorites', require('./routes/favorites'));
 
 const PORT = process.env.PORT || 3000;
 
