@@ -20,6 +20,21 @@
     <div class="player-header">
       <a href="team.html" class="back-link">← Team Name</a>
       <h1>Player Name</h1>
+      <div class="player-header">
+      <a href="team.html" class="back-link">← Team Name</a>
+      <h1>Player Name</h1>
+      <p class="meta">Position · Team Name</p>
+      <div class="stat-row">
+        <div class="stat-pill"><div class="val">—</div><div class="lbl">Goals</div></div>
+        <div class="stat-pill"><div class="val">—</div><div class="lbl">Assists</div></div>
+        <div class="stat-pill"><div class="val">—</div><div class="lbl">Apps</div></div>
+        <div class="stat-pill"><div class="val">—</div><div class="lbl">Legend</div></div>
+      </div>
+
+      <div class="fav-wrap">
+        <button class="btn-fav" disabled>☆ Add to Favorites (login required)</button>
+      </div>
+
       <nav class="profile-tabs">
         <a href="#" class="tab-link active" data-tab="profile">Profile</a>
         <a href="#" class="tab-link" data-tab="record">Record</a>
@@ -27,10 +42,42 @@
       </nav>
     </div>
     <div class="content">
-      <div id="profile" class="tab-content active"><p>Profile</p></div>
-      <div id="record" class="tab-content"><p>Record</p></div>
-      <div id="honours" class="tab-content"><p>Honours</p></div>
-    </div>
+
+      <div class="stat-row">
+
+      <div id="profile" class="tab-content active">
+        <div class="section-title">Profile</div>
+        <table class="tbl">
+          <tbody>
+            <tr><td class="info-label">Name</td><td>—</td></tr>
+            <tr><td class="info-label">Position</td><td>—</td></tr>
+            <tr><td class="info-label">Club</td><td><a href="team.html">—</a></td></tr>
+            <tr><td class="info-label">Legend</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="record" class="tab-content">
+        <div class="section-title">Record</div>
+        <table class="tbl">
+          <thead><tr><th>Season</th><th>Club</th><th>Goals</th><th>Assists</th><th>Apps</th></tr></thead>
+          <tbody>
+            <tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="honours" class="tab-content">
+        <div class="section-title">Honours</div>
+        <table class="tbl">
+          <thead><tr><th>Competition</th><th>Season</th></tr></thead>
+          <tbody>
+            <tr><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>      
   </div>
 
   <script src="js/api.js"></script>
