@@ -126,6 +126,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .stat-pill .lbl { font-size: 11px; color: #c9c9c9; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
 /* [season.html] layout */
+.page-season .team-header { padding-bottom: 16px; }
 .season-layout {
   display: grid; grid-template-columns: 180px 1fr;
   max-width: 1120px; margin: 0 auto; min-height: calc(100vh - 160px);
