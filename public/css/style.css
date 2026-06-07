@@ -123,7 +123,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
 .stat-pill { border: 1px solid #ebebeb; border-radius: 12px; padding: 14px 20px; text-align: center; min-width: 88px; }
 .stat-pill .val { font-size: 22px; font-weight: 800; }
-.stat-pill .lbl { font-size: 11px; color: #767676; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.stat-pill .lbl { font-size: 11px; color: #c9c9c9; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
 /* [season.html] layout */
 .season-layout {
@@ -162,24 +162,24 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .rb.d { background: #f5f5f5; color: #767676; }
 
 /* [player.html] header */
-.player-header { padding: 24px 0 0; border-bottom: 1px solid #ebebeb; margin-bottom: 4px; }
-.player-header h1 { font-size: 24px; font-weight: 800; margin: 8px 0 4px; }
-.player-header .meta { font-size: 13px; color: #ffffff; margin-bottom: 0; }
-.player-header .back-link { color: #ffffff; }
+.player-header { padding: 0; border-bottom: 1px solid #ebebeb; margin-bottom: 4px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; }
+.player-header-left { display: flex; flex-direction: column; justify-content: space-between; }
+.player-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 24px; }
+.player-header h1 { font-size: 40px; font-weight: 800; margin: 0; }
+.player-header .meta { font-size: 15px; color: #ffffff; margin-bottom: 0; }
+.player-header .back-link { color: rgba(255,255,255,0.6); }
 
 /* [player.html] profile tabs */
-.profile-tabs { display: flex; margin-top: 8px; }
+.profile-tabs { display: flex; margin-top: 8px; width: 100%;  }
 .profile-tabs a {
-  color: #767676; text-decoration: none;
+  color: #ffffff; text-decoration: none;
   font-size: 13px; font-weight: 600; padding: 10px 16px;
   border-bottom: 2px solid transparent; cursor: pointer;
 }
-.profile-tabs a:hover { color: #222; }
+.profile-tabs a:hover { color: #7c7c7c; }
 .profile-tabs a.active { color: #222; border-bottom-color: #222; }
 
 /* [player.html] favorites button */
-.player-header { position: relative; }
-.fav-wrap { position: absolute; top: 24px; right: 0; }
 .btn-fav {
   padding: 10px 20px; border-radius: 20px; border: 1px solid #ddd;
   background: #fff; font-family: inherit; font-size: 13px; font-weight: 600;

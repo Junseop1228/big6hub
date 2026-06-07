@@ -19,24 +19,31 @@
 
   <div class="team-header">
     <div class="container">
-      <div class="player-header">
-        <a href="team.html" class="back-link">← Team Name</a>
-        <h1>Player Name</h1>
-        <p class="meta">Position · Team Name</p>
-        <div class="stat-row">
-          <div class="stat-pill"><div class="val">—</div><div class="lbl">Goals</div></div>
-          <div class="stat-pill"><div class="val">—</div><div class="lbl">Assists</div></div>
-          <div class="stat-pill"><div class="val">—</div><div class="lbl">Apps</div></div>
-          <div class="stat-pill"><div class="val">—</div><div class="lbl">Legend</div></div>
+        <div class="player-header">
+          <div class="player-header-left">
+            <a href="team.html" class="back-link">← Team Name</a>
+            <h1>Player Name</h1>
+            <p class="meta">Position · Team Name</p>
+            <nav class="profile-tabs">
+              <a href="#" class="tab-link active" data-tab="profile">Profile</a>
+              <a href="#" class="tab-link" data-tab="record">Record</a>
+              <a href="#" class="tab-link" data-tab="honours">Honours</a>
+            </nav>
+          </div>
+
+          <div class="player-header-right">
+            <div class="fav-wrap">
+              <button class="btn-fav" disabled>☆ Add to Favorites (login required)</button>
+            </div>
+            <div class="stat-row">
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Goals</div></div>
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Assists</div></div>
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Apps</div></div>
+              <div class="stat-pill"><div class="val">—</div><div class="lbl">Legend</div></div>
+            </div>
+          </div>
         </div>
-        <div class="fav-wrap">
-          <button class="btn-fav" disabled>☆ Add to Favorites (login required)</button>
-        </div>
-        <nav class="profile-tabs">
-          <a href="#" class="tab-link active" data-tab="profile">Profile</a>
-          <a href="#" class="tab-link" data-tab="record">Record</a>
-          <a href="#" class="tab-link" data-tab="honours">Honours</a>
-        </nav>
+
       </div>
     </div>
   </div>
