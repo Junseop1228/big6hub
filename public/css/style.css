@@ -143,6 +143,24 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .sec { display: none; }
 .sec.active { display: block; }
 
+/* [season.html] matches tab - competition filter buttons */
+.match-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+.match-tab {
+  padding: 7px 16px; border-radius: 20px; border: 1px solid #ddd;
+  background: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  color: #767676; cursor: pointer;
+}
+.match-tab.active { background: #222; color: #fff; border-color: #222; }
+ 
+/* [season.html] matches tab - W/D/L result badge */
+.rb {
+  display: inline-block; width: 24px; height: 24px; line-height: 24px;
+  text-align: center; border-radius: 4px; font-size: 11px; font-weight: 700;
+}
+.rb.w { background: #dcfce7; color: #16a34a; }
+.rb.l { background: #fee2e2; color: #dc2626; }
+.rb.d { background: #f5f5f5; color: #767676; }
+
 /* [player.html] header */
 .player-header { padding: 24px 0 0; border-bottom: 1px solid #ebebeb; margin-bottom: 4px; }
 .player-header .back-link { color: #767676; }
