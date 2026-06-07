@@ -187,6 +187,55 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   color: #767676; cursor: not-allowed;
 }
 
+/* [auth.html] */
+.auth-page {
+  min-height: calc(100vh - 56px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 16px; background: #fafafa;
+}
+.auth-card {
+  background: #fff; border: 1px solid #ebebeb;
+  border-radius: 20px; padding: 40px;
+  width: 100%; max-width: 420px;
+}
+.auth-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.auth-subtitle { font-size: 13px; color: #767676; margin-bottom: 28px; }
+
+.auth-tabs {
+  display: flex; background: #f5f5f5;
+  border: 1px solid #ebebeb; border-radius: 12px;
+  padding: 4px; margin-bottom: 24px;
+}
+.auth-tab {
+  flex: 1; padding: 9px; border: none; background: transparent;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: #767676; border-radius: 9px; cursor: pointer;
+}
+.auth-tab.active { background: #fff; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+.auth-form { display: none; flex-direction: column; gap: 14px; }
+.auth-form.active { display: flex; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 12px; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.4px; }
+.field input {
+  padding: 11px 14px; border: 1px solid #ddd; border-radius: 10px;
+  font-family: inherit; font-size: 14px; color: #222; outline: none;
+}
+.field input:focus { border-color: #610e84; }
+
+.btn-submit {
+  margin-top: 4px; padding: 12px; border: none; border-radius: 20px;
+  background: #222; color: #fff; font-family: inherit;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.btn-submit:hover { background: #000; }
+
+.alert { padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 500; display: none; }
+.alert.visible { display: block; }
+.alert.error { background: #fee2e2; color: #dc2626; }
+.alert.success { background: #dcfce7; color: #16a34a; }
+
 /* [global] responsive */
 @media (max-width: 768px) {
   .teams-grid { grid-template-columns: repeat(2, 1fr); }
