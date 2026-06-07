@@ -8,11 +8,26 @@ document.querySelectorAll('.side-link').forEach(link => {
   });
 });
 
+const matchData = {
+  pl:  [['—','—','— : —','—','w'],['—','—','— : —','—','l'],['—','—','— : —','—','d']],
+  ucl: [['—','—','— : —','—','w']],
+  fa:  [['—','—','— : —','—','w']],
+  lc:  [['—','—','— : —','—','w']],
+};
+
+function renderMatches(comp) {
+  const tbody = document.querySelector('#comp-pl tbody');
+  tbody.innerHTML = matchData[comp].map(r =>
+    `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="rb ${r[4]}">${r[4].toUpperCase()}</span></td></tr>`
+  ).join('');
+}
+
 document.querySelectorAll('.match-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.match-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('[id^="comp-"]').forEach(t => t.style.display = 'none');
     btn.classList.add('active');
-    document.getElementById('comp-' + btn.dataset.comp).style.display = 'table';
+    renderMatches(btn.dataset.comp);
   });
 });
+
+renderMatches('pl');
