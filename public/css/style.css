@@ -264,16 +264,29 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .fav-players-scroll::-webkit-scrollbar { display: none; }
 
 /* [favorites.html] player card */
-.fav-player-card { flex-shrink: 0; width: 120px; border: 1px solid #ebebeb; border-radius: 12px; overflow: hidden; text-decoration: none; }
+.fav-player-card {
+  flex-shrink: 0; width: 140px;
+  border: 1px solid #ebebeb; border-radius: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; gap: 6px;
+  background: #fff;
+}
+.fav-player-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 
 /* [favorites.html] player card - top (white area + remove btn) */
 .fav-player-card-top { height: 120px; background: #fff; display: flex; align-items: flex-start; justify-content: flex-end; padding: 8px 8px 0; }
-.fav-remove-btn { font-size: 10px; color: #767676; background: none; border: 1px solid #ebebeb; border-radius: 6px; padding: 3px 8px; cursor: pointer; font-family: inherit; }
-.fav-remove-btn:hover { background: #f5f5f5; }
+.fav-remove-btn { font-size: 14px; color: #c9c9c9; background: none; border: none; cursor: pointer; flex-shrink: 0; line-height: 1; }
+.fav-remove-btn:hover { color: #dc2626; }
 
 /* [favorites.html] player card - bottom (team color area) */
 .fav-player-card-bottom { padding: 8px 10px 10px; }
-.fav-player-name { font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fav-player-name {
+  font-size: 12px; font-weight: 600; color: #222;
+  text-decoration: none; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.fav-player-name:hover { text-decoration: underline; }
+.fav-player-position { font-size: 11px; color: #767676; margin-top: 2px; }
 .fav-player-pos { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
 
 /* [favorites.html] scroll buttons */
