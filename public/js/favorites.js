@@ -16,7 +16,7 @@ const TEAM_ID_MAP = {
   tottenham: 73,
 };
 
-// ── Scroll buttons (from Seongbin) ────────────────────────────────────────────
+// ── Scroll buttons ────────────────────────────────────────────────────────────
 
 document.querySelectorAll('.fav-scroll-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -55,7 +55,6 @@ async function loadFavorites() {
 
     const favPlayers = favorites.filter(f => f.kind === 'player');
 
-    // fetch all favorited players detail
     const playerDetails = await Promise.all(
       favPlayers.map(f =>
         apiFetch('/api/players/' + f.target_id)
@@ -65,14 +64,12 @@ async function loadFavorites() {
     );
     const validPlayers = playerDetails.filter(Boolean);
 
-    // group players by team_id
     const playersByTeamId = {};
     validPlayers.forEach(p => {
       if (!playersByTeamId[p.team_id]) playersByTeamId[p.team_id] = [];
       playersByTeamId[p.team_id].push(p);
     });
 
-    // update each hardcoded team card using slug → team_id map
     document.querySelectorAll('.fav-team-card').forEach(card => {
       const logoLink = card.querySelector('.fav-logo-col');
       const slug = logoLink && logoLink.href.match(/slug=(\w+)/)?.[1];
@@ -80,20 +77,21 @@ async function loadFavorites() {
       const team = allTeams.find(t => t.id === teamId);
       if (!team) return;
 
-      // set logo
       const logoImg = card.querySelector('.fav-logo-img');
       if (logoImg && team.logo_url) logoImg.src = team.logo_url;
       if (logoLink) logoLink.href = 'team.html?slug=' + team.slug;
 
-      // render favorited players
-      const scroll  = card.querySelector('.fav-players-scroll');
+      const scroll = card.querySelector('.fav-players-scroll');
       if (!scroll) return;
 
       const players = playersByTeamId[team.id] || [];
       if (players.length > 0) {
         scroll.innerHTML = players.map(p => `
           <div class="fav-player-card" data-fav-id="${p.fav_id}">
-            <a href="player.html?id=${p.id}&slug=${team.slug}" class="fav-player-name">${escapeHtml(p.name)}</a>
+            <div class="fav-player-info">
+              <a href="player.html?id=${p.id}&slug=${team.slug}" class="fav-player-name">${escapeHtml(p.name)}</a>
+              <span class="fav-player-position">${escapeHtml(p.position)}</span>
+            </div>
             <button class="fav-remove-btn" title="Remove">×</button>
           </div>
         `).join('');
