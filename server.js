@@ -8,4 +8,4 @@ app.listen(PORT, async () => {
   await initDb();
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`API docs at   http://localhost:${PORT}/api-docs`);
-});cd
+});
