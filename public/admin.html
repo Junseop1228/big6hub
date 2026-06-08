@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Big6Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth"></div>
+  </nav>
+
+  <div class="admin-header">
+    <div class="container">
+      <h1>Admin Console</h1>
+      <nav class="admin-tabs">
+        <a href="#" class="tab-link active" data-tab="teams">Teams</a>
+        <a href="#" class="tab-link" data-tab="players">Players</a>
+        <a href="#" class="tab-link" data-tab="seasons">Seasons</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="content">
+
+      <div id="teams" class="tab-content active">
+        <div class="section-title">Teams</div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Name</th><th>Stadium</th><th>City</th><th>Manager</th><th></th></tr>
+          </thead>
+          <tbody id="teams-tbody">
+            <tr><td colspan="5" class="admin-empty">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="players" class="tab-content">
+        <div class="admin-toolbar">
+          <div class="section-title">Players</div>
+          <button class="admin-btn-add" id="btn-add-player">+ Add Player</button>
+        </div>
+        <div class="admin-form" id="form-player" style="display:none;">
+          <div class="admin-form-grid">
+            <div class="field"><label>Name</label><input type="text" id="player-name" placeholder="Player name"/></div>
+            <div class="field"><label>Position</label><input type="text" id="player-position" placeholder="e.g. Forward"/></div>
+            <div class="field"><label>Team</label>
+              <select id="player-team">
+                <option value="">Select team</option>
+                <option value="57">Arsenal</option>
+                <option value="61">Chelsea</option>
+                <option value="64">Liverpool</option>
+                <option value="65">Manchester City</option>
+                <option value="66">Manchester United</option>
+                <option value="73">Tottenham</option>
+              </select>
+            </div>
+            <div class="field"><label>Is Legend</label>
+              <select id="player-legend">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-form-actions">
+            <button class="admin-btn-save" id="btn-save-player">Save</button>
+            <button class="admin-btn-cancel" id="btn-cancel-player">Cancel</button>
+          </div>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Name</th><th>Position</th><th>Team</th><th>Legend</th><th></th></tr>
+          </thead>
+          <tbody id="players-tbody">
+            <tr><td colspan="5" class="admin-empty">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="seasons" class="tab-content">
+        <div class="admin-toolbar">
+          <div class="section-title">Seasons</div>
+          <button class="admin-btn-add" id="btn-add-season">+ Add Season</button>
+        </div>
+        <div class="admin-form" id="form-season" style="display:none;">
+          <div class="admin-form-grid">
+            <div class="field"><label>Season</label><input type="text" id="season-name" placeholder="e.g. 2024/25"/></div>
+            <div class="field"><label>Team</label>
+              <select id="season-team">
+                <option value="">Select team</option>
+                <option value="57">Arsenal</option>
+                <option value="61">Chelsea</option>
+                <option value="64">Liverpool</option>
+                <option value="65">Manchester City</option>
+                <option value="66">Manchester United</option>
+                <option value="73">Tottenham</option>
+              </select>
+            </div>
+            <div class="field"><label>Wins</label><input type="number" id="season-wins" placeholder="0"/></div>
+            <div class="field"><label>Draws</label><input type="number" id="season-draws" placeholder="0"/></div>
+            <div class="field"><label>Losses</label><input type="number" id="season-losses" placeholder="0"/></div>
+            <div class="field"><label>Position</label><input type="number" id="season-position" placeholder="1"/></div>
+          </div>
+          <div class="admin-form-actions">
+            <button class="admin-btn-save" id="btn-save-season">Save</button>
+            <button class="admin-btn-cancel" id="btn-cancel-season">Cancel</button>
+          </div>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Season</th><th>Team</th><th>W</th><th>D</th><th>L</th><th>Position</th><th></th></tr>
+          </thead>
+          <tbody id="seasons-tbody">
+            <tr><td colspan="7" class="admin-empty">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/session.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
