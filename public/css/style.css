@@ -295,3 +295,29 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   .side-nav a.active { border-left-color: transparent; border-bottom-color: #222; background: none; }
   .side-content { padding: 20px 16px 60px; }
 }
+/* [favorites.html] player card */
+.fav-player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  gap: 6px;
+}
+.fav-player-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #222;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fav-player-name:hover { text-decoration: underline; }
+.fav-remove-btn {
+  background: none;
+  border: none;
+  color: #767676;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+}
