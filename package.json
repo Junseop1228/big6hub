@@ -1,52 +1,53 @@
 {
-    "name":  "big6hub",
-    "version":  "1.0.0",
-    "description":  "\u003e Premier League Big 6 Information Hub\r \u003e ITM519 Web Programming ??SeoulTech 2026",
-    "main":  "app.js",
-    "directories":  {
-                        "doc":  "docs",
-                        "test":  "tests"
-                    },
-    "scripts":  {
-                    "start":  "node app.js",
-                    "seed":  "node seed.js",
-                    "test":  "jest --runInBand --forceExit --detectOpenHandles"
-                },
-    "repository":  {
-                       "type":  "git",
-                       "url":  "git+https://github.com/Junseop1228/big6hub.git"
-                   },
-    "keywords":  [
-
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "type":  "commonjs",
-    "bugs":  {
-                 "url":  "https://github.com/Junseop1228/big6hub/issues"
-             },
-    "homepage":  "https://github.com/Junseop1228/big6hub#readme",
-    "dependencies":  {
-                         "bcrypt":  "^6.0.0",
-                         "cors":  "^2.8.6",
-                         "dotenv":  "^17.4.2",
-                         "express":  "^5.2.1",
-                         "express-validator":  "^7.3.2",
-                         "helmet":  "^8.2.0",
-                         "jsonwebtoken":  "^9.0.3",
-                         "sqlite":  "^5.1.1",
-                         "sqlite3":  "^6.0.1",
-                         "swagger-ui-express":  "^5.0.1",
-                         "yamljs":  "^0.3.0"
-                     },
-    "devDependencies":  {
-                            "jest":  "^30.4.2",
-                            "supertest":  "^7.2.2"
-                        },
-    "jest":  {
-                 "testEnvironment":  "node",
-                 "testMatch":  [
-                                   "**/tests/**/*.test.js"
-                               ]
-             }
+  "name": "big6hub",
+  "version": "1.0.0",
+  "description": "> Premier League Big 6 Information Hub\r > ITM519 Web Programming ??SeoulTech 2026",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js",
+    "test": "jest --runInBand --forceExit --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Junseop1228/big6hub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Junseop1228/big6hub/issues"
+  },
+  "homepage": "https://github.com/Junseop1228/big6hub#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "setupFiles": [
+      "<rootDir>/tests/setup.js"
+    ]
+  }
 }
