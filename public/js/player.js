@@ -2,7 +2,7 @@
 // Loaded only on player.html
 
 // slug is declared in utils.js
-const params  = new URLSearchParams(window.location.search);
+const params   = new URLSearchParams(window.location.search);
 const playerId = params.get('id');
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
@@ -35,14 +35,12 @@ async function loadPlayer() {
     if (!player) return;
 
     // get team info
-    const teams = await apiFetch('/api/teams');
-    const team  = teams.find(t => t.id === player.team_id);
+    const teams    = await apiFetch('/api/teams');
+    const team     = teams.find(t => t.id === player.team_id);
     const teamName = team ? team.name : '—';
     const teamSlug = team ? team.slug : slug;
 
     // header
-    document.querySelector('.team-header h1') && 
-      (document.querySelector('.team-header h1').textContent = player.name);
     document.querySelector('h1').textContent = player.name;
     document.querySelector('.meta').textContent = (player.position || '—') + ' · ' + teamName;
     document.title = player.name + ' — Big6Hub';
@@ -50,7 +48,7 @@ async function loadPlayer() {
     // back link
     const backLink = document.querySelector('.back-link');
     if (backLink) {
-      backLink.href  = 'team.html?slug=' + teamSlug;
+      backLink.href        = 'team.html?slug=' + teamSlug;
       backLink.textContent = '← ' + teamName;
     }
 
@@ -71,11 +69,64 @@ async function loadPlayer() {
     }
     if (rows[3]) rows[3].cells[1].textContent = player.is_legend ? 'Yes' : 'No';
 
+    // record tab — show current team stats (no per-season breakdown in DB)
+    renderRecord(player, teamName);
+
+    // honours tab — uses team trophies if player is a legend, otherwise empty
+    renderHonours(player, team);
+
     // favorites button
     initFavButton(player, teamSlug);
 
   } catch (err) {
     console.error('Failed to load player:', err.message);
+  }
+}
+
+// ── Render record tab ─────────────────────────────────────────────────────────
+
+function renderRecord(player, teamName) {
+  const tbody = document.querySelector('#record .tbl tbody');
+  if (!tbody) return;
+
+  // DB has aggregate stats only (no per-season breakdown), show as a single row
+  tbody.innerHTML = `
+    <tr>
+      <td>—</td>
+      <td>${escapeHtml(teamName)}</td>
+      <td>${player.goals   ?? '—'}</td>
+      <td>${player.assists ?? '—'}</td>
+      <td>—</td>
+    </tr>
+  `;
+}
+
+// ── Render honours tab ────────────────────────────────────────────────────────
+
+async function renderHonours(player, team) {
+  const tbody = document.querySelector('#honours .tbl tbody');
+  if (!tbody) return;
+
+  if (!player.is_legend || !team) {
+    tbody.innerHTML = '<tr><td colspan="2">No honours data available.</td></tr>';
+    return;
+  }
+
+  try {
+    // Fetch full team detail to get trophies
+    const fullTeam = await apiFetch('/api/teams/' + team.id);
+    const trophies = fullTeam.trophies || [];
+
+    tbody.innerHTML = trophies.length > 0
+      ? trophies.map(t => `
+          <tr>
+            <td>${escapeHtml(t.competition)}</td>
+            <td>${escapeHtml(t.season)}</td>
+          </tr>
+        `).join('')
+      : '<tr><td colspan="2">No honours data available.</td></tr>';
+  } catch {
+    tbody.innerHTML = '<tr><td colspan="2">No honours data available.</td></tr>';
   }
 }
 
@@ -94,7 +145,6 @@ async function initFavButton(player, teamSlug) {
   btn.disabled = false;
   btn.style.cursor = 'pointer';
 
-  // check if already favorited
   let isFav = false;
   let favId  = null;
 
@@ -128,8 +178,8 @@ async function initFavButton(player, teamSlug) {
 }
 
 function renderFavBtn(btn, isFav) {
-  btn.textContent   = isFav ? '★ Saved to Favorites' : '☆ Add to Favorites';
-  btn.style.color   = isFav ? '#e11d48' : '';
+  btn.textContent       = isFav ? '★ Saved to Favorites' : '☆ Add to Favorites';
+  btn.style.color       = isFav ? '#e11d48' : '';
   btn.style.borderColor = isFav ? '#e11d48' : '';
 }
 
