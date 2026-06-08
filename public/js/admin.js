@@ -53,30 +53,35 @@ function renderTeams() {
     return;
   }
   tbody.innerHTML = teamsData.map(t => `
-    <tr data-team-id="${t.id}">
+    <tr>
       <td>${escapeHtml(t.name)}</td>
-      <td class="team-stadium">${escapeHtml(t.stadium)}</td>
-      <td class="team-city">${escapeHtml(t.city)}</td>
-      <td class="team-manager">${escapeHtml(t.manager)}</td>
+      <td>${escapeHtml(t.stadium)}</td>
+      <td>${escapeHtml(t.city)}</td>
+      <td>${escapeHtml(t.manager)}</td>
       <td>
-        <button class="admin-btn-edit" onclick="startEditTeam(${t.id})">Edit</button>
+        <button class="admin-btn-edit" data-action="edit-team" data-id="${t.id}">Edit</button>
       </td>
     </tr>
   `).join('');
 }
 
+// event delegation — teams table
+document.getElementById('teams-tbody').addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  if (btn.dataset.action === 'edit-team') startEditTeam(Number(btn.dataset.id));
+});
+
 function startEditTeam(id) {
   const team = teamsData.find(t => t.id === id);
   if (!team) return;
   editingTeamId = id;
-
-  const form = document.getElementById('form-team');
-  document.getElementById('team-stadium').value  = team.stadium  || '';
-  document.getElementById('team-city').value     = team.city     || '';
-  document.getElementById('team-manager').value  = team.manager  || '';
+  document.getElementById('team-stadium').value  = team.stadium || '';
+  document.getElementById('team-city').value     = team.city    || '';
+  document.getElementById('team-manager').value  = team.manager || '';
   document.getElementById('form-team-title').textContent = 'Edit: ' + team.name;
-  form.style.display = 'block';
-  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('form-team').style.display = 'block';
+  document.getElementById('form-team').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 document.getElementById('btn-cancel-team').addEventListener('click', () => {
@@ -86,15 +91,14 @@ document.getElementById('btn-cancel-team').addEventListener('click', () => {
 
 document.getElementById('btn-save-team').addEventListener('click', async () => {
   if (!editingTeamId) return;
-  const body = {
-    stadium: document.getElementById('team-stadium').value.trim(),
-    city:    document.getElementById('team-city').value.trim(),
-    manager: document.getElementById('team-manager').value.trim(),
-  };
   try {
     await apiFetch('/api/teams/' + editingTeamId, {
       method: 'PUT',
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        stadium: document.getElementById('team-stadium').value.trim(),
+        city:    document.getElementById('team-city').value.trim(),
+        manager: document.getElementById('team-manager').value.trim(),
+      }),
     });
     document.getElementById('form-team').style.display = 'none';
     editingTeamId = null;
@@ -125,18 +129,27 @@ function renderPlayers() {
     return;
   }
   tbody.innerHTML = playersData.map(p => `
-    <tr data-player-id="${p.id}">
+    <tr>
       <td>${escapeHtml(p.name)}</td>
       <td>${escapeHtml(p.position)}</td>
       <td>${escapeHtml(TEAM_NAMES[p.team_id] || String(p.team_id))}</td>
       <td>${p.is_legend ? 'Yes' : 'No'}</td>
       <td>
-        <button class="admin-btn-edit" onclick="startEditPlayer(${p.id})">Edit</button>
-        <button class="admin-btn-delete" onclick="deletePlayer(${p.id})">Delete</button>
+        <button class="admin-btn-edit"   data-action="edit-player"   data-id="${p.id}">Edit</button>
+        <button class="admin-btn-delete" data-action="delete-player" data-id="${p.id}">Delete</button>
       </td>
     </tr>
   `).join('');
 }
+
+// event delegation — players table
+document.getElementById('players-tbody').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const id = Number(btn.dataset.id);
+  if (btn.dataset.action === 'edit-player')   startEditPlayer(id);
+  if (btn.dataset.action === 'delete-player') await deletePlayer(id);
+});
 
 document.getElementById('btn-add-player').addEventListener('click', () => {
   editingPlayerId = null;
@@ -157,7 +170,6 @@ function startEditPlayer(id) {
   const player = playersData.find(p => p.id === id);
   if (!player) return;
   editingPlayerId = id;
-
   document.getElementById('player-name').value     = player.name     || '';
   document.getElementById('player-position').value = player.position || '';
   document.getElementById('player-team').value     = player.team_id  || '';
@@ -167,16 +179,15 @@ function startEditPlayer(id) {
 }
 
 document.getElementById('btn-save-player').addEventListener('click', async () => {
-  const name     = document.getElementById('player-name').value.trim();
-  const position = document.getElementById('player-position').value.trim();
-  const team_id  = Number(document.getElementById('player-team').value);
+  const name      = document.getElementById('player-name').value.trim();
+  const position  = document.getElementById('player-position').value.trim();
+  const team_id   = Number(document.getElementById('player-team').value);
   const is_legend = Number(document.getElementById('player-legend').value);
 
   if (!name || !position || !team_id) {
     showError('Name, position, and team are required.');
     return;
   }
-
   try {
     if (editingPlayerId) {
       await apiFetch('/api/players/' + editingPlayerId, {
@@ -228,20 +239,29 @@ function renderSeasons() {
     return;
   }
   tbody.innerHTML = seasonsData.map(s => `
-    <tr data-season-id="${s.id}">
+    <tr>
       <td>${escapeHtml(s.season)}</td>
       <td>${escapeHtml(TEAM_NAMES[s.team_id] || String(s.team_id))}</td>
-      <td>${s.wins    ?? '—'}</td>
-      <td>${s.draws   ?? '—'}</td>
-      <td>${s.losses  ?? '—'}</td>
+      <td>${s.wins           ?? '—'}</td>
+      <td>${s.draws          ?? '—'}</td>
+      <td>${s.losses         ?? '—'}</td>
       <td>${s.final_position ?? '—'}</td>
       <td>
-        <button class="admin-btn-edit" onclick="startEditSeason(${s.id})">Edit</button>
-        <button class="admin-btn-delete" onclick="deleteSeason(${s.id})">Delete</button>
+        <button class="admin-btn-edit"   data-action="edit-season"   data-id="${s.id}">Edit</button>
+        <button class="admin-btn-delete" data-action="delete-season" data-id="${s.id}">Delete</button>
       </td>
     </tr>
   `).join('');
 }
+
+// event delegation — seasons table
+document.getElementById('seasons-tbody').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const id = Number(btn.dataset.id);
+  if (btn.dataset.action === 'edit-season')   startEditSeason(id);
+  if (btn.dataset.action === 'delete-season') await deleteSeason(id);
+});
 
 document.getElementById('btn-add-season').addEventListener('click', () => {
   editingSeasonId = null;
@@ -264,7 +284,6 @@ function startEditSeason(id) {
   const season = seasonsData.find(s => s.id === id);
   if (!season) return;
   editingSeasonId = id;
-
   document.getElementById('season-name').value     = season.season         || '';
   document.getElementById('season-team').value     = season.team_id        || '';
   document.getElementById('season-wins').value     = season.wins           ?? '';
@@ -287,7 +306,6 @@ document.getElementById('btn-save-season').addEventListener('click', async () =>
     showError('Season name and team are required.');
     return;
   }
-
   try {
     if (editingSeasonId) {
       await apiFetch('/api/seasons/' + editingSeasonId, {
