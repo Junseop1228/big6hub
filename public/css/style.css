@@ -281,6 +281,62 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .fav-scroll-btn.left { left: -11px; }
 .fav-scroll-btn.right { right: -11px; }
 
+
+/* [admin.html] header */
+.admin-header { background: #222; color: #fff; padding: 20px 40px 0; }
+.admin-header h1 { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+
+/* [admin.html] tabs */
+.admin-tabs { display: flex; }
+.admin-tabs a {
+  color: rgba(255,255,255,0.6); text-decoration: none;
+  font-size: 13px; font-weight: 600; padding: 10px 16px;
+  border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.admin-tabs a:hover { color: #fff; }
+.admin-tabs a.active { color: #fff; border-bottom-color: #fff; }
+
+/* [admin.html] toolbar */
+.admin-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.admin-toolbar .section-title { margin: 0; }
+
+/* [admin.html] add button */
+.admin-btn-add {
+  padding: 7px 16px; border-radius: 20px; border: 1px solid #ddd;
+  background: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  color: #222; cursor: pointer;
+}
+.admin-btn-add:hover { background: #f5f5f5; }
+
+/* [admin.html] form */
+.admin-form { background: #fafafa; border: 1px solid #ebebeb; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.admin-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.admin-form-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+/* [admin.html] save/cancel buttons */
+.admin-btn-save {
+  padding: 8px 20px; border-radius: 20px; border: none;
+  background: #222; color: #fff; font-family: inherit;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.admin-btn-save:hover { background: #000; }
+.admin-btn-cancel {
+  padding: 8px 20px; border-radius: 20px; border: 1px solid #ddd;
+  background: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+  color: #767676; cursor: pointer;
+}
+
+/* [admin.html] table action buttons */
+.admin-btn-edit {
+  font-size: 12px; color: #222; background: none; border: 1px solid #ddd;
+  border-radius: 6px; padding: 3px 10px; cursor: pointer; font-family: inherit; margin-right: 4px;
+}
+.admin-btn-delete {
+  font-size: 12px; color: #dc2626; background: none; border: 1px solid #fecaca;
+  border-radius: 6px; padding: 3px 10px; cursor: pointer; font-family: inherit;
+}
+.admin-empty { color: #c9c9c9; text-align: center; padding: 20px; }
+
 /* [global] responsive */
 @media (max-width: 768px) {
   .teams-grid { grid-template-columns: repeat(2, 1fr); }
