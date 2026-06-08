@@ -1,5 +1,5 @@
 /**
- * API tests — Teams routes
+ * API tests ??Teams routes
  * Covers: GET /api/teams, GET /api/teams/:id, PUT /api/teams/:id
  *
  * Run: npm test
@@ -15,7 +15,6 @@ const ADMIN = { email: 'admin@big6hub.test', password: 'Admin1234!' };
 const USER  = { email: 'user@big6hub.test',  password: 'Password1!' };
 
 beforeAll(async () => {
-  process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
   await initDb();
   app = require('../../app');
 
@@ -40,17 +39,17 @@ beforeEach(async () => {
   await getDb().run(`DELETE FROM users WHERE role = 'user'`);
 });
 
-// ─── GET /api/teams ───────────────────────────────────────────────────────────
+// ??? GET /api/teams ???????????????????????????????????????????????????????????
 
 describe('GET /api/teams', () => {
-  test('200 — returns array of teams', async () => {
+  test('200 ??returns array of teams', async () => {
     const res = await request(app).get('/api/teams');
 
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
-  test('200 — each team has required fields', async () => {
+  test('200 ??each team has required fields', async () => {
     const res = await request(app).get('/api/teams');
 
     expect(res.body.length).toBeGreaterThan(0);
@@ -61,10 +60,10 @@ describe('GET /api/teams', () => {
   });
 });
 
-// ─── GET /api/teams/:id ───────────────────────────────────────────────────────
+// ??? GET /api/teams/:id ???????????????????????????????????????????????????????
 
 describe('GET /api/teams/:id', () => {
-  test('200 — existing team returns detail with trophies and managers', async () => {
+  test('200 ??existing team returns detail with trophies and managers', async () => {
     const res = await request(app).get('/api/teams/1');
 
     expect(res.status).toBe(200);
@@ -75,7 +74,7 @@ describe('GET /api/teams/:id', () => {
     expect(Array.isArray(res.body.managers)).toBe(true);
   });
 
-  test('404 — non-existent team returns not found error', async () => {
+  test('404 ??non-existent team returns not found error', async () => {
     const res = await request(app).get('/api/teams/9999');
 
     expect(res.status).toBe(404);
@@ -83,7 +82,7 @@ describe('GET /api/teams/:id', () => {
   });
 });
 
-// ─── PUT /api/teams/:id ───────────────────────────────────────────────────────
+// ??? PUT /api/teams/:id ???????????????????????????????????????????????????????
 
 describe('PUT /api/teams/:id', () => {
   let adminToken;
@@ -100,7 +99,7 @@ describe('PUT /api/teams/:id', () => {
     userToken = userLogin.body.token;
   });
 
-  test('200 — admin can update team manager', async () => {
+  test('200 ??admin can update team manager', async () => {
     const res = await request(app)
       .put('/api/teams/1')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -110,7 +109,7 @@ describe('PUT /api/teams/:id', () => {
     expect(res.body).toHaveProperty('manager', 'Test Manager');
   });
 
-  test('403 — regular user cannot update team', async () => {
+  test('403 ??regular user cannot update team', async () => {
     const res = await request(app)
       .put('/api/teams/1')
       .set('Authorization', `Bearer ${userToken}`)
@@ -120,7 +119,7 @@ describe('PUT /api/teams/:id', () => {
     expect(res.body.error).toHaveProperty('code', 'FORBIDDEN');
   });
 
-  test('401 — unauthenticated request cannot update team', async () => {
+  test('401 ??unauthenticated request cannot update team', async () => {
     const res = await request(app)
       .put('/api/teams/1')
       .send({ manager: 'No Auth Manager' });

@@ -1,5 +1,5 @@
 /**
- * Unit tests — requireAuth middleware
+ * Unit tests ??requireAuth middleware
  * Tests JWT verification logic in isolation (no HTTP server needed).
  *
  * Run: npm test
@@ -7,7 +7,6 @@
 
 const jwt = require('jsonwebtoken');
 
-process.env.JWT_SECRET = 'test-secret-for-unit-tests';
 
 const requireAuth = require('../../middleware/requireAuth');
 
