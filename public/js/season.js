@@ -1,3 +1,12 @@
+// season.js — season detail page API integration
+// Loaded only on season.html
+
+// slug is declared in utils.js
+const seasonParams = new URLSearchParams(window.location.search);
+const seasonId = seasonParams.get('id');
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
 document.querySelectorAll('.side-link').forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
@@ -8,26 +17,104 @@ document.querySelectorAll('.side-link').forEach(link => {
   });
 });
 
-const matchData = {
-  pl:  [['—','—','— : —','—','w'],['—','—','— : —','—','l'],['—','—','— : —','—','d']],
-  ucl: [['—','—','— : —','—','w']],
-  fa:  [['—','—','— : —','—','w']],
-  lc:  [['—','—','— : —','—','w']],
-};
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function renderMatches(comp) {
-  const tbody = document.querySelector('#comp-pl tbody');
-  tbody.innerHTML = matchData[comp].map(r =>
-    `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="rb ${r[4]}">${r[4].toUpperCase()}</span></td></tr>`
-  ).join('');
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '—';
+  return div.innerHTML;
 }
+
+// ── Load season data ──────────────────────────────────────────────────────────
+
+async function loadSeason() {
+  if (!seasonId) return;
+
+  try {
+    const [season, teams] = await Promise.all([
+      apiFetch('/api/seasons/' + seasonId),
+      apiFetch('/api/teams'),
+    ]);
+
+    const team = teams.find(t => t.id === season.team_id);
+    const teamName = team ? team.name : '—';
+    const teamSlug = team ? team.slug : (slug || '');
+
+    // Update header
+    document.querySelector('.team-header h1').textContent = season.season || 'Season';
+    document.title = (season.season || 'Season') + ' — Big6Hub';
+
+    // Back link
+    const backLink = document.querySelector('.back-link');
+    if (backLink) {
+      backLink.href = 'team.html?slug=' + teamSlug;
+      backLink.textContent = '← ' + teamName;
+    }
+
+    // Apply team color
+    if (team && team.slug && typeof TEAM_COLORS !== 'undefined') {
+      document.documentElement.style.setProperty('--team-color', TEAM_COLORS[team.slug] || '#333333');
+    }
+
+    renderSummary(season);
+
+    // Load squad (players of this team)
+    const players = await apiFetch('/api/players?team_id=' + season.team_id);
+    renderSquad(players, teamSlug);
+
+  } catch (err) {
+    console.error('Failed to load season:', err.message);
+  }
+}
+
+// ── Render summary tab ────────────────────────────────────────────────────────
+
+function renderSummary(season) {
+  const rows = document.querySelectorAll('#summary .tbl tbody tr');
+  // Premier League row
+  if (rows[0]) {
+    rows[0].cells[1].textContent = season.wins    ?? '—';
+    rows[0].cells[2].textContent = season.draws   ?? '—';
+    rows[0].cells[3].textContent = season.losses  ?? '—';
+    rows[0].cells[4].textContent = season.final_position ? season.final_position + 'th' : '—';
+  }
+  // Other competitions — no data in DB, show dashes
+  for (let i = 1; i < rows.length; i++) {
+    rows[i].cells[1].textContent = '—';
+    rows[i].cells[2].textContent = '—';
+    rows[i].cells[3].textContent = '—';
+    rows[i].cells[4].textContent = '—';
+  }
+}
+
+// ── Render squad tab ──────────────────────────────────────────────────────────
+
+function renderSquad(players, teamSlug) {
+  const tbody = document.querySelector('#squad .tbl tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = players.length > 0
+    ? players.map((p, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><a href="player.html?id=${p.id}&slug=${teamSlug}">${escapeHtml(p.name)}</a></td>
+          <td>${escapeHtml(p.position)}</td>
+          <td>${p.goals ?? '—'}</td>
+          <td>${p.assists ?? '—'}</td>
+        </tr>
+      `).join('')
+    : '<tr><td colspan="5">No squad data available.</td></tr>';
+}
+
+// ── Match Results — no match data in DB, keep static UI ──────────────────────
 
 document.querySelectorAll('.match-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.match-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderMatches(btn.dataset.comp);
   });
 });
 
-renderMatches('pl');
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', loadSeason);
