@@ -187,6 +187,100 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   color: #767676; cursor: not-allowed;
 }
 
+/* [auth.html] */
+.auth-page {
+  min-height: calc(100vh - 56px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 40px 16px; background: #fafafa;
+}
+.auth-card {
+  background: #fff; border: 1px solid #ebebeb;
+  border-radius: 20px; padding: 40px;
+  width: 100%; max-width: 420px;
+}
+.auth-card h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; text-align: center; }
+.auth-subtitle { font-size: 13px; color: #767676; margin-bottom: 28px; text-align: center;}
+
+.auth-tabs {
+  display: flex; background: #f5f5f5;
+  border: 1px solid #ebebeb; border-radius: 12px;
+  padding: 4px; margin-bottom: 24px;
+}
+.auth-tab {
+  flex: 1; padding: 9px; border: none; background: transparent;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: #767676; border-radius: 9px; cursor: pointer;
+}
+.auth-tab[data-tab="login"].active { background: #fff; color: #222; }
+.auth-tab[data-tab="register"].active { background: #222; color: #fff; }
+
+.auth-form { display: none; flex-direction: column; gap: 14px; }
+.auth-form.active { display: flex; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 12px; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.4px; }
+.field input {
+  padding: 11px 14px; border: 1px solid #ddd; border-radius: 10px;
+  font-family: inherit; font-size: 14px; color: #222; outline: none;
+}
+.field input:focus { border-color: #610e84; }
+
+.btn-submit {
+  margin-top: 4px; padding: 12px; border: none; border-radius: 20px;
+  background: #610e84; color: #fff; font-family: inherit;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.btn-submit:hover { background: #000; }
+
+.alert { padding: 11px 14px; border-radius: 10px; font-size: 13px; font-weight: 500; display: none; }
+.alert.visible { display: block; }
+.alert.error { background: #fee2e2; color: #dc2626; }
+.alert.success { background: #dcfce7; color: #16a34a; }
+
+/* [favorites.html] page title */
+.fav-title { font-size: 22px; font-weight: 800; margin-bottom: 28px; }
+
+/* [favorites.html] team card */
+.fav-team-card { border: 1px solid #ebebeb; border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
+
+/* [favorites.html] team card - header bar */
+.fav-team-header { height: 36px; display: flex; align-items: center; padding: 0 16px; }
+.fav-team-header span { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+
+/* [favorites.html] team card - body layout */
+.fav-team-body { display: grid; grid-template-columns: 200px 1fr; min-height: 180px; }
+
+/* [favorites.html] team card - logo column */
+.fav-logo-col { display: flex; align-items: center; justify-content: center; border-right: 1px solid #ebebeb; padding: 16px 10px; }
+.fav-logo-img { width: 48px; height: 48px; object-fit: contain; }
+
+/* [favorites.html] team card - players column */
+.fav-players-col { padding: 12px 16px; min-width: 0; display: flex; align-items: center; }
+.fav-no-players { font-size: 12px; color: #c9c9c9; }
+
+/* [favorites.html] player card - scroll wrapper */
+.fav-scroll-wrap { position: relative; width: 100%; padding: 0 20px;}
+.fav-players-scroll { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; }
+.fav-players-scroll::-webkit-scrollbar { display: none; }
+
+/* [favorites.html] player card */
+.fav-player-card { flex-shrink: 0; width: 120px; border: 1px solid #ebebeb; border-radius: 12px; overflow: hidden; text-decoration: none; }
+
+/* [favorites.html] player card - top (white area + remove btn) */
+.fav-player-card-top { height: 120px; background: #fff; display: flex; align-items: flex-start; justify-content: flex-end; padding: 8px 8px 0; }
+.fav-remove-btn { font-size: 10px; color: #767676; background: none; border: 1px solid #ebebeb; border-radius: 6px; padding: 3px 8px; cursor: pointer; font-family: inherit; }
+.fav-remove-btn:hover { background: #f5f5f5; }
+
+/* [favorites.html] player card - bottom (team color area) */
+.fav-player-card-bottom { padding: 8px 10px 10px; }
+.fav-player-name { font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fav-player-pos { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+/* [favorites.html] scroll buttons */
+.fav-scroll-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid #ddd; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #222; z-index: 1; }
+.fav-scroll-btn.left { left: -11px; }
+.fav-scroll-btn.right { right: -11px; }
+
 /* [global] responsive */
 @media (max-width: 768px) {
   .teams-grid { grid-template-columns: repeat(2, 1fr); }
