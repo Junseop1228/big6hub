@@ -27,8 +27,13 @@ function escapeHtml(str) {
 
 async function loadTeam() {
   try {
+    // Get all teams to find the id for this slug
     const teams = await apiFetch('/api/teams');
-    const team  = teams.find(t => t.slug === slug);
+    const teamBasic = teams.find(t => t.slug === slug);
+    if (!teamBasic) return;
+
+    // Get full team detail (includes trophies + managers)
+    const team = await apiFetch('/api/teams/' + teamBasic.id);
     if (!team) return;
 
     document.title = team.name + ' — Big6Hub';
@@ -47,6 +52,7 @@ async function loadTeam() {
     renderPlayersTab(players);
     renderSeasons(seasons);
     renderInfo(team);
+    renderTrophies(team.trophies || []);
 
   } catch (err) {
     console.error('Failed to load team:', err.message);
@@ -134,6 +140,41 @@ function renderInfo(team) {
 
   const infoText = document.querySelector('#information .info-text');
   if (infoText) infoText.textContent = team.name + ' is one of the Premier League Big 6 clubs, based in ' + (team.city || 'England') + '.';
+}
+
+// ── Render trophies tab ───────────────────────────────────────────────────────
+
+function renderTrophies(trophies) {
+  // Count by competition category
+  const counts = { League: 0, 'FA Cup': 0, 'League Cup': 0, UCL: 0, Europa: 0 };
+  trophies.forEach(t => {
+    const c = t.competition || '';
+    if (/premier league|first division/i.test(c))   counts['League']++;
+    else if (/fa cup/i.test(c))                      counts['FA Cup']++;
+    else if (/league cup|carabao|efl/i.test(c))      counts['League Cup']++;
+    else if (/champions league|european cup/i.test(c)) counts['UCL']++;
+    else if (/europa/i.test(c))                      counts['Europa']++;
+  });
+
+  // Update stat pills
+  const pills = document.querySelectorAll('#trophies .stat-pill .val');
+  const order = ['League', 'FA Cup', 'League Cup', 'UCL', 'Europa'];
+  order.forEach((key, i) => {
+    if (pills[i]) pills[i].textContent = counts[key] || '0';
+  });
+
+  // Render trophy list table
+  const tbody = document.querySelector('#trophies .tbl tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = trophies.length > 0
+    ? trophies.map(t => `
+        <tr>
+          <td>${escapeHtml(t.competition)}</td>
+          <td>${escapeHtml(t.season)}</td>
+        </tr>
+      `).join('')
+    : '<tr><td colspan="2">No trophy data available.</td></tr>';
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
