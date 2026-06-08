@@ -94,6 +94,7 @@ async function loadFavorites() {
         scroll.innerHTML = players.map(p => `
           <div class="fav-player-card" data-fav-id="${p.fav_id}">
             <a href="player.html?id=${p.id}&slug=${team.slug}" class="fav-player-name">${escapeHtml(p.name)}</a>
+            <span class="fav-player-position">${escapeHtml(p.position)}</span>
             <button class="fav-remove-btn" title="Remove">×</button>
           </div>
         `).join('');
