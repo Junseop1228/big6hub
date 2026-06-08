@@ -27,24 +27,42 @@
   <div class="container">
     <div class="content">
 
+      <!-- ── Teams ─────────────────────────────────────────────────────────── -->
       <div id="teams" class="tab-content active">
         <div class="section-title">Teams</div>
+
+        <div class="admin-form" id="form-team" style="display:none;">
+          <div id="form-team-title" class="admin-form-heading">Edit Team</div>
+          <div class="admin-form-grid">
+            <div class="field"><label>Stadium</label><input type="text" id="team-stadium" placeholder="Stadium name"/></div>
+            <div class="field"><label>City</label><input type="text" id="team-city" placeholder="City"/></div>
+            <div class="field"><label>Manager</label><input type="text" id="team-manager" placeholder="Manager name"/></div>
+          </div>
+          <div class="admin-form-actions">
+            <button class="admin-btn-save" id="btn-save-team">Save</button>
+            <button class="admin-btn-cancel" id="btn-cancel-team">Cancel</button>
+          </div>
+        </div>
+
         <table class="tbl">
           <thead>
             <tr><th>Name</th><th>Stadium</th><th>City</th><th>Manager</th><th></th></tr>
           </thead>
           <tbody id="teams-tbody">
-            <tr><td colspan="5" class="admin-empty">—</td></tr>
+            <tr><td colspan="5" class="admin-empty">Loading...</td></tr>
           </tbody>
         </table>
       </div>
 
+      <!-- ── Players ───────────────────────────────────────────────────────── -->
       <div id="players" class="tab-content">
         <div class="admin-toolbar">
           <div class="section-title">Players</div>
           <button class="admin-btn-add" id="btn-add-player">+ Add Player</button>
         </div>
+
         <div class="admin-form" id="form-player" style="display:none;">
+          <div id="form-player-title" class="admin-form-heading">Add Player</div>
           <div class="admin-form-grid">
             <div class="field"><label>Name</label><input type="text" id="player-name" placeholder="Player name"/></div>
             <div class="field"><label>Position</label><input type="text" id="player-position" placeholder="e.g. Forward"/></div>
@@ -71,24 +89,28 @@
             <button class="admin-btn-cancel" id="btn-cancel-player">Cancel</button>
           </div>
         </div>
+
         <table class="tbl">
           <thead>
             <tr><th>Name</th><th>Position</th><th>Team</th><th>Legend</th><th></th></tr>
           </thead>
           <tbody id="players-tbody">
-            <tr><td colspan="5" class="admin-empty">—</td></tr>
+            <tr><td colspan="5" class="admin-empty">Loading...</td></tr>
           </tbody>
         </table>
       </div>
 
+      <!-- ── Seasons ───────────────────────────────────────────────────────── -->
       <div id="seasons" class="tab-content">
         <div class="admin-toolbar">
           <div class="section-title">Seasons</div>
           <button class="admin-btn-add" id="btn-add-season">+ Add Season</button>
         </div>
+
         <div class="admin-form" id="form-season" style="display:none;">
+          <div id="form-season-title" class="admin-form-heading">Add Season</div>
           <div class="admin-form-grid">
-            <div class="field"><label>Season</label><input type="text" id="season-name" placeholder="e.g. 2024/25"/></div>
+            <div class="field"><label>Season</label><input type="text" id="season-name" placeholder="e.g. 2024-25"/></div>
             <div class="field"><label>Team</label>
               <select id="season-team">
                 <option value="">Select team</option>
@@ -100,22 +122,23 @@
                 <option value="73">Tottenham</option>
               </select>
             </div>
-            <div class="field"><label>Wins</label><input type="number" id="season-wins" placeholder="0"/></div>
-            <div class="field"><label>Draws</label><input type="number" id="season-draws" placeholder="0"/></div>
-            <div class="field"><label>Losses</label><input type="number" id="season-losses" placeholder="0"/></div>
-            <div class="field"><label>Position</label><input type="number" id="season-position" placeholder="1"/></div>
+            <div class="field"><label>Wins</label><input type="number" id="season-wins" placeholder="0" min="0"/></div>
+            <div class="field"><label>Draws</label><input type="number" id="season-draws" placeholder="0" min="0"/></div>
+            <div class="field"><label>Losses</label><input type="number" id="season-losses" placeholder="0" min="0"/></div>
+            <div class="field"><label>Final Position</label><input type="number" id="season-position" placeholder="1" min="1"/></div>
           </div>
           <div class="admin-form-actions">
             <button class="admin-btn-save" id="btn-save-season">Save</button>
             <button class="admin-btn-cancel" id="btn-cancel-season">Cancel</button>
           </div>
         </div>
+
         <table class="tbl">
           <thead>
             <tr><th>Season</th><th>Team</th><th>W</th><th>D</th><th>L</th><th>Position</th><th></th></tr>
           </thead>
           <tbody id="seasons-tbody">
-            <tr><td colspan="7" class="admin-empty">—</td></tr>
+            <tr><td colspan="7" class="admin-empty">Loading...</td></tr>
           </tbody>
         </table>
       </div>
