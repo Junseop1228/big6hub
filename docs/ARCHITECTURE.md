@@ -94,14 +94,22 @@ big6hub/
 │   ├── team.html        Club detail — tabs: Home, Information, Seasons, Players, Trophies
 │   ├── season.html      Season detail — sidebar: Summary, Squad, Match Results
 │   ├── player.html      Player profile
-│   ├── css/style.css    Global styles + responsive layout
+│   ├── auth.html        Login / Register page
+│   ├── favorites.html   My Favorites — saved players by team
+│   ├── admin.html       Admin CRUD console — Teams, Players, Seasons
+│   ├── css/
+│   │   └──style.css    Global styles + responsive layout
 │   └── js/
 │       ├── api.js       Centralized fetch wrapper (apiFetch) — auto-attaches JWT
 │       ├── session.js   JWT localStorage management + nav rendering
 │       ├── utils.js     Team color CSS variable injection from slug
 │       ├── team.js      Tab switching logic
 │       ├── season.js    Sidebar + match tab logic
-│       └── player.js    Tab switching logic
+│       ├── player.js    Tab switching logic
+│       ├── auth.js      Login / Register tab switching and URL param routing
+│       ├── favorites.js Scroll and remove interactions
+│       ├── home.js      Dynamic team card rendering via API
+│       └── admin.js     Admin CRUD operations via API
 │
 └── tests/
     ├── unit/
