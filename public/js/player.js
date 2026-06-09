@@ -43,7 +43,18 @@ async function loadPlayer() {
     // header
     document.querySelector('h1').textContent = player.name;
     const photoEl = document.getElementById('player-photo');
-    if (photoEl && player.photo_url) photoEl.src = player.photo_url;
+    if (photoEl) {
+      if (player.photo_url) {
+        photoEl.src = player.photo_url;
+        photoEl.onerror = () => {
+          photoEl.style.display = 'none';
+          const parent = photoEl.parentElement;
+          if (parent) parent.style.background = '#f0f0f0';
+        };
+      } else {
+        photoEl.style.display = 'none';
+      }
+    }
     document.querySelector('.meta').textContent = (player.position || '—') + ' · ' + teamName;
     document.title = player.name + ' — Big6Hub';
 
