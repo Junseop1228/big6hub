@@ -158,7 +158,9 @@ function renderSeasons(seasons) {
   const current = seasons[0];
   if (current) {
     const rows = document.querySelectorAll('#home .season-status .season-row');
-    if (rows[0]) rows[0].querySelector('strong').textContent = current.final_position ? current.final_position + 'th' : '—';
+    const pos = current.final_position;
+    const ordinal = pos === 1 ? '1st' : pos === 2 ? '2nd' : pos === 3 ? '3rd' : pos + 'th';
+    if (rows[0]) rows[0].querySelector('strong').textContent = pos ? ordinal : '—';
     if (rows[1]) rows[1].querySelector('strong').textContent =
       `${current.wins ?? '—'} / ${current.draws ?? '—'} / ${current.losses ?? '—'}`;
   }
