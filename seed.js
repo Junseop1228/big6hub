@@ -1,7 +1,7 @@
 /**
  * seed.js
  *
- * Initializes the database and populates it with live data from football-data.org.
+ * Initializes the database and populates it with live data from ESPN.
  * Also creates the admin account defined in .env.
  *
  * Usage: npm run seed
@@ -38,10 +38,10 @@ async function seed() {
     console.log(`[seed] Admin account already exists: ${adminEmail}`);
   }
 
-  // ── Live data from football-data.org ─────────────────────────────────────
+  // ── Live data from ESPN ───────────────────────────────────────────────────
   const summary = await fetchAndSeed();
 
-  // ── News from BBC RSS feeds (non-blocking — failures don't stop the seed) ──
+  // ── News from BBC RSS feeds (non-blocking — failures don't stop the seed) ─
   console.log('\n[seed] Fetching news from BBC RSS feeds...');
   let newsCount = 0;
   try {
@@ -52,11 +52,12 @@ async function seed() {
   }
 
   console.log('\n[seed] Done.');
-  console.log(`  Teams inserted:   ${summary.teamCount}`);
-  console.log(`  Players inserted: ${summary.playerCount}`);
-  console.log(`  Seasons inserted: ${summary.seasonCount}`);
-  console.log(`  Managers inserted:${summary.managerCount}`);
-  console.log(`  News inserted:    ${newsCount}`);
+  console.log(`  Teams inserted:    ${summary.teamCount}`);
+  console.log(`  Players inserted:  ${summary.playerCount}`);
+  console.log(`  Seasons inserted:  ${summary.seasonCount}`);
+  console.log(`  Managers inserted: ${summary.managerCount}`);
+  console.log(`  Trophies inserted: ${summary.trophyCount}`);
+  console.log(`  News inserted:     ${newsCount}`);
 
   process.exit(0);
 }

@@ -1,137 +1,250 @@
 /**
  * scripts/fetchData.js
  *
- * Fetches live data from football-data.org (v4) and populates the database.
+ * Fetches live data from ESPN (unofficial, free, no API key required)
+ * and populates the database.
+ *
  * Called by seed.js — do not run directly.
  *
- * Rate limit: 10 requests / minute on the free tier.
- * We use at most 2 requests:
- *   1. GET /competitions/PL/teams?season=2024  — teams + squads
- *   2. GET /competitions/PL/standings?season=2024  — 2024-25 season stats
+ * Sources:
+ *   ESPN Site API  — team roster with embedded stats (goals, assists)
+ *   ESPN Core API  — team season records (5 recent + 14 historical for trophies)
  *
- * Header required: X-Auth-Token
+ * ESPN year convention: year = START year of season
+ *   year=2024 -> 2024-25 season (ends May 2025)
+ *   year=2006 -> 2006-07 season (ends May 2007)
+ *
+ * TODO: FA Cup, EFL Cup, UCL trophies — no free structured source available.
+ *   Reference data (since 1992):
+ *   Arsenal  — FA Cup: 2002-03, 2004-05, 2013-14, 2014-15, 2016-17, 2019-20
+ *   Chelsea  — FA Cup: 1999-00, 2006-07, 2008-09, 2009-10, 2011-12, 2017-18
+ *              UCL: 2011-12, 2020-21  EFL: 2004-05, 2006-07, 2014-15
+ *   Liverpool— FA Cup: 2000-01, 2005-06, 2021-22
+ *              UCL: 2004-05, 2018-19  EFL: 2011-12, 2021-22, 2023-24
+ *   Man City — FA Cup: 2010-11, 2018-19, 2022-23
+ *              UCL: 2022-23  EFL: 2017-18, 2018-19, 2019-20, 2020-21
+ *   Man Utd  — FA Cup: 1993-94, 1995-96, 1998-99, 2003-04, 2015-16
+ *              UCL: 1998-99, 2007-08  EFL: 1992-93, 2005-06, 2009-10
+ *   Tottenham— EFL: 2007-08
  */
 
-require('dotenv').config();
 const { getDb } = require('../db');
 
-const API_BASE = 'https://api.football-data.org/v4';
-const API_KEY  = process.env.FOOTBALL_DATA_API_KEY;
+const ESPN_SITE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1';
+const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/soccer/leagues/eng.1';
 
-// football-data.org IDs for the Big 6
-const BIG6_IDS = [57, 61, 64, 65, 66, 73];
+const BIG6 = [
+  { slug: 'arsenal',   espnId: 359 },
+  { slug: 'chelsea',   espnId: 363 },
+  { slug: 'liverpool', espnId: 364 },
+  { slug: 'mancity',   espnId: 382 },
+  { slug: 'manutd',    espnId: 360 },
+  { slug: 'tottenham', espnId: 367 },
+];
 
-// slug mapping (used as URL-friendly identifier in our app)
-const SLUG_MAP = {
-  57: 'arsenal',
-  61: 'chelsea',
-  64: 'liverpool',
-  65: 'mancity',
-  66: 'manutd',
-  73: 'tottenham',
+// ESPN year = START year of season. saveRecord=true inserts W/D/L into seasons table.
+const SEASONS = [
+  { espnYear: 2024, label: '2024-25', saveRecord: true  },
+  { espnYear: 2023, label: '2023-24', saveRecord: true  },
+  { espnYear: 2022, label: '2022-23', saveRecord: true  },
+  { espnYear: 2021, label: '2021-22', saveRecord: true  },
+  { espnYear: 2020, label: '2020-21', saveRecord: true  },
+  { espnYear: 2019, label: '2019-20', saveRecord: false },
+  { espnYear: 2018, label: '2018-19', saveRecord: false },
+  { espnYear: 2017, label: '2017-18', saveRecord: false },
+  { espnYear: 2016, label: '2016-17', saveRecord: false },
+  { espnYear: 2015, label: '2015-16', saveRecord: false },
+  { espnYear: 2014, label: '2014-15', saveRecord: false },
+  { espnYear: 2013, label: '2013-14', saveRecord: false },
+  { espnYear: 2012, label: '2012-13', saveRecord: false },
+  { espnYear: 2011, label: '2011-12', saveRecord: false },
+  { espnYear: 2010, label: '2010-11', saveRecord: false },
+  { espnYear: 2009, label: '2009-10', saveRecord: false },
+  { espnYear: 2008, label: '2008-09', saveRecord: false },
+  { espnYear: 2007, label: '2007-08', saveRecord: false },
+  { espnYear: 2006, label: '2006-07', saveRecord: false },
+];
+
+const CURRENT_MANAGERS = {
+  arsenal:   'Mikel Arteta',
+  chelsea:   'Xabi Alonso',
+  liverpool: 'Andoni Iraola',
+  mancity:   'Pep Guardiola',
+  manutd:    'Michael Carrick',
+  tottenham: 'Roberto De Zerbi',
 };
 
-/**
- * Thin fetch wrapper that respects the rate-limit headers.
- * Logs remaining requests so we can see throttling in action.
- */
-async function apiFetch(path) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'X-Auth-Token': API_KEY },
+const STADIUMS = {
+  arsenal:   'Emirates Stadium',
+  chelsea:   'Stamford Bridge',
+  liverpool: 'Anfield',
+  mancity:   'Etihad Stadium',
+  manutd:    'Old Trafford',
+  tottenham: 'Tottenham Hotspur Stadium',
+};
+
+const CITIES = {
+  arsenal:   'London',
+  chelsea:   'London',
+  liverpool: 'Liverpool',
+  mancity:   'Manchester',
+  manutd:    'Manchester',
+  tottenham: 'London',
+};
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+
+async function espnFetch(url) {
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Big6Hub academic project)' },
   });
-
-  // log rate-limit info as instructed in the API welcome email
-  const remaining = res.headers.get('x-requests-available-minute');
-  const resetIn   = res.headers.get('x-requestcounter-reset');
-  console.log(`  [API] ${path} → ${res.status} | remaining: ${remaining}/min | resets in: ${resetIn}s`);
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`football-data.org error ${res.status}: ${text}`);
-  }
+  if (!res.ok) throw new Error(`ESPN fetch error ${res.status}: ${url}`);
   return res.json();
 }
 
+// ── data fetchers ─────────────────────────────────────────────────────────────
+
+async function fetchTeamDetail(espnId) {
+  const data = await espnFetch(`${ESPN_SITE}/teams/${espnId}`);
+  const t = data.team;
+  return {
+    name:     t.displayName,
+    logo_url: t.logos?.[0]?.href ?? null,
+  };
+}
+
 /**
- * Main export — fetches and inserts all data.
- * Returns a summary object for logging.
+ * Fetches roster with embedded goals/assists stats — 1 request per team.
  */
+async function fetchRoster(espnId) {
+  const data = await espnFetch(`${ESPN_SITE}/teams/${espnId}/roster`);
+  const players = [];
+  for (const athlete of data.athletes ?? []) {
+    const name     = athlete.displayName ?? athlete.fullName ?? null;
+    const position = athlete.position?.displayName ?? 'Unknown';
+    if (!name) continue;
+
+    let goals = 0, assists = 0;
+    const categories = athlete.statistics?.splits?.categories ?? [];
+    for (const cat of categories) {
+      for (const s of cat.stats ?? []) {
+        if (s.name === 'totalGoals')  goals   = Math.round(s.value ?? 0);
+        if (s.name === 'goalAssists') assists = Math.round(s.value ?? 0);
+      }
+    }
+    players.push({ name, position, goals, assists });
+  }
+  return players;
+}
+
+/**
+ * Fetches season W/D/L and league rank for a team.
+ * Returns null if team not found or request fails.
+ */
+async function fetchSeasonRecord(espnId, espnYear) {
+  try {
+    const data = await espnFetch(
+      `${ESPN_CORE}/seasons/${espnYear}/teams/${espnId}`
+    );
+    const recordRef = data.record?.['$ref']?.replace('http://', 'https://');
+    if (!recordRef) return null;
+
+    const record = await espnFetch(recordRef);
+    const stats  = {};
+    for (const item of record.items ?? []) {
+      for (const s of item.stats ?? []) {
+        stats[s.name] = s.value;
+      }
+    }
+
+    return {
+      wins:     Math.round(stats.wins   ?? 0),
+      draws:    Math.round(stats.ties   ?? 0),
+      losses:   Math.round(stats.losses ?? 0),
+      position: Math.round(stats.rank   ?? 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ── main export ───────────────────────────────────────────────────────────────
+
 async function fetchAndSeed() {
-  if (!API_KEY) throw new Error('FOOTBALL_DATA_API_KEY is not set in .env');
-
   const db = getDb();
+  let teamCount = 0, playerCount = 0, seasonCount = 0,
+      managerCount = 0, trophyCount = 0;
 
-  // ── Request 1: teams + squads ─────────────────────────────────────────────
-  console.log('\n[fetchData] Fetching teams and squads...');
-  const teamsData = await apiFetch('/competitions/PL/teams?season=2024');
-  const big6 = teamsData.teams.filter(t => BIG6_IDS.includes(t.id));
+  for (const { slug, espnId } of BIG6) {
+    console.log(`\n[fetchData] Processing ${slug} (ESPN id: ${espnId})...`);
 
-  // ── Request 2: 2024-25 standings ──────────────────────────────────────────
-  console.log('[fetchData] Fetching standings...');
-  const standingsData = await apiFetch('/competitions/PL/standings?season=2024');
-  const table = standingsData.standings[0].table; // TOTAL standings
+    // team info
+    const detail  = await fetchTeamDetail(espnId);
+    const manager = CURRENT_MANAGERS[slug] ?? null;
 
-  // index standings by team id for O(1) lookup
-  const standingsById = {};
-  table.forEach(row => { standingsById[row.team.id] = row; });
-
-  // ── Insert into DB ────────────────────────────────────────────────────────
-  let teamCount = 0, playerCount = 0, seasonCount = 0, managerCount = 0;
-
-  for (const team of big6) {
-    const slug    = SLUG_MAP[team.id];
-    const manager = team.coach?.name ?? null;
-
-    // insert team
     await db.run(
       `INSERT OR REPLACE INTO teams (id, name, slug, stadium, city, manager, logo_url)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        team.id,
-        team.name.replace(' FC', '').replace(' Hotspur', ' Hotspur'), // keep full name
-        slug,
-        team.venue ?? null,
-        team.area?.name ?? null,
-        manager,
-        team.crest ?? null,
-      ]
+      [espnId, detail.name, slug,
+       STADIUMS[slug], CITIES[slug], manager, detail.logo_url]
     );
     teamCount++;
 
-    // insert current squad as players (top 20 to keep data manageable)
-    const squad = (team.squad ?? []).slice(0, 20);
-    for (const player of squad) {
-      await db.run(
-        `INSERT OR IGNORE INTO players (team_id, name, position, goals, assists, is_legend)
-         VALUES (?, ?, ?, 0, 0, 0)`,
-        [team.id, player.name, player.position ?? 'Unknown']
-      );
-      playerCount++;
-    }
-
-    // insert current manager into managers table
+    // current manager
     if (manager) {
       await db.run(
         `INSERT OR IGNORE INTO managers (team_id, name, start_year, end_year, is_current)
          VALUES (?, ?, ?, ?, 1)`,
-        [team.id, manager, new Date().getFullYear(), null]
+        [espnId, manager, new Date().getFullYear(), null]
       );
       managerCount++;
     }
 
-    // insert 2024-25 season stats from standings
-    const row = standingsById[team.id];
-    if (row) {
+    // roster + stats (1 request)
+    console.log(`  [fetchData] Fetching roster...`);
+    const roster = await fetchRoster(espnId);
+    for (const p of roster) {
       await db.run(
-        `INSERT OR IGNORE INTO seasons (team_id, season, wins, draws, losses, final_position)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [team.id, '2024-25', row.won, row.draw, row.lost, row.position]
+        `INSERT OR IGNORE INTO players
+           (team_id, name, position, goals, assists, is_legend)
+         VALUES (?, ?, ?, ?, ?, 0)`,
+        [espnId, p.name, p.position, p.goals, p.assists]
       );
-      seasonCount++;
+      playerCount++;
+    }
+    console.log(`  [fetchData] ${slug}: ${roster.length} players`);
+
+    // season records + PL trophies
+    console.log(`  [fetchData] Fetching season records...`);
+    for (const { espnYear, label, saveRecord } of SEASONS) {
+      const rec = await fetchSeasonRecord(espnId, espnYear);
+      if (!rec) continue;
+
+      // insert W/D/L for recent 5 seasons only
+      if (saveRecord) {
+        await db.run(
+          `INSERT OR IGNORE INTO seasons
+             (team_id, season, wins, draws, losses, final_position)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [espnId, label, rec.wins, rec.draws, rec.losses, rec.position]
+        );
+        seasonCount++;
+      }
+
+      // PL trophy if rank = 1 (all 19 seasons)
+      if (rec.position === 1) {
+        await db.run(
+          `INSERT OR IGNORE INTO trophies (team_id, competition, season)
+           VALUES (?, ?, ?)`,
+          [espnId, 'Premier League', label]
+        );
+        trophyCount++;
+        console.log(`  [fetchData]   PL winner: ${slug} ${label}`);
+      }
     }
   }
 
-  return { teamCount, playerCount, seasonCount, managerCount };
+  return { teamCount, playerCount, seasonCount, managerCount, trophyCount };
 }
 
 module.exports = { fetchAndSeed };
