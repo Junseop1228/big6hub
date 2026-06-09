@@ -57,6 +57,7 @@ async function seed() {
   console.log(`  Seasons inserted:  ${summary.seasonCount}`);
   console.log(`  Managers inserted: ${summary.managerCount}`);
   console.log(`  Trophies inserted: ${summary.trophyCount}`);
+  console.log(`  Photos matched:    ${summary.photoCount}`);
   console.log(`  News inserted:     ${newsCount}`);
 
   process.exit(0);

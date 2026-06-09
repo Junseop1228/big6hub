@@ -9,6 +9,7 @@
  * Sources:
  *   ESPN Site API  — team roster with embedded stats (goals, assists)
  *   ESPN Core API  — team season records (5 recent + 14 historical for trophies)
+ *   PL Pulse API   — official Premier League player photos (250x250, ~80% coverage)
  *
  * ESPN year convention: year = START year of season
  *   year=2024 -> 2024-25 season (ends May 2025)
@@ -32,14 +33,16 @@ const { getDb } = require('../db');
 
 const ESPN_SITE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1';
 const ESPN_CORE = 'https://sports.core.api.espn.com/v2/sports/soccer/leagues/eng.1';
+const PL_API    = 'https://footballapi.pulselive.com/football';
+const PL_PHOTO  = 'https://resources.premierleague.com/premierleague/photos/players/250x250';
 
 const BIG6 = [
-  { slug: 'arsenal',   espnId: 359 },
-  { slug: 'chelsea',   espnId: 363 },
-  { slug: 'liverpool', espnId: 364 },
-  { slug: 'mancity',   espnId: 382 },
-  { slug: 'manutd',    espnId: 360 },
-  { slug: 'tottenham', espnId: 367 },
+  { slug: 'arsenal',   espnId: 359, plId: 1  },
+  { slug: 'chelsea',   espnId: 363, plId: 4  },
+  { slug: 'liverpool', espnId: 364, plId: 10 },
+  { slug: 'mancity',   espnId: 382, plId: 11 },
+  { slug: 'manutd',    espnId: 360, plId: 12 },
+  { slug: 'tottenham', espnId: 367, plId: 21 },
 ];
 
 // ESPN year = START year of season. saveRecord=true inserts W/D/L into seasons table.
@@ -102,7 +105,61 @@ async function espnFetch(url) {
   return res.json();
 }
 
+async function plFetch(url) {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0',
+      'Origin':     'https://www.premierleague.com',
+      'Referer':    'https://www.premierleague.com/',
+    },
+  });
+  if (!res.ok) throw new Error(`PL fetch error ${res.status}: ${url}`);
+  return res.json();
+}
+
+/**
+ * Normalizes a player name for fuzzy matching:
+ * lowercase, remove accents, strip punctuation.
+ */
+function normalizeName(name) {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')  // strip diacritics
+    .replace(/[^a-z\s]/g, '')         // strip non-alpha
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 // ── data fetchers ─────────────────────────────────────────────────────────────
+
+/**
+ * Fetches PL official player photos for a team.
+ * Returns a Map of normalized player name -> photo URL.
+ * Uses PL Pulse API (footballapi.pulselive.com) — free, no key.
+ * Photo URL: https://resources.premierleague.com/premierleague/photos/players/250x250/{optaId}.png
+ *
+ * @param {number} plTeamId  PL API team ID
+ */
+async function fetchPLPhotos(plTeamId) {
+  const photoMap = new Map();
+  try {
+    const data = await plFetch(
+      `${PL_API}/players?pageSize=100&compSeasons=578&altIds=true&teams=${plTeamId}`
+    );
+    for (const p of data.content ?? []) {
+      const name  = p.name?.display ?? '';
+      const opta  = p.altIds?.opta ?? '';
+      if (!name || !opta) continue;
+      const photoUrl = `${PL_PHOTO}/${opta}.png`;
+      photoMap.set(normalizeName(name), photoUrl);
+    }
+    console.log(`  [fetchData] PL photos fetched: ${photoMap.size} players`);
+  } catch (err) {
+    console.warn(`  [fetchData] PL photo fetch failed: ${err.message}`);
+  }
+  return photoMap;
+}
 
 async function fetchTeamDetail(espnId) {
   const data = await espnFetch(`${ESPN_SITE}/teams/${espnId}`);
@@ -137,10 +194,6 @@ async function fetchRoster(espnId) {
   return players;
 }
 
-/**
- * Fetches season W/D/L and league rank for a team.
- * Returns null if team not found or request fails.
- */
 async function fetchSeasonRecord(espnId, espnYear) {
   try {
     const data = await espnFetch(
@@ -173,9 +226,9 @@ async function fetchSeasonRecord(espnId, espnYear) {
 async function fetchAndSeed() {
   const db = getDb();
   let teamCount = 0, playerCount = 0, seasonCount = 0,
-      managerCount = 0, trophyCount = 0;
+      managerCount = 0, trophyCount = 0, photoCount = 0;
 
-  for (const { slug, espnId } of BIG6) {
+  for (const { slug, espnId, plId } of BIG6) {
     console.log(`\n[fetchData] Processing ${slug} (ESPN id: ${espnId})...`);
 
     // team info
@@ -200,19 +253,41 @@ async function fetchAndSeed() {
       managerCount++;
     }
 
+    // PL official photos (1 request per team)
+    console.log(`  [fetchData] Fetching PL official photos...`);
+    const photoMap = await fetchPLPhotos(plId);
+
     // roster + stats (1 request)
     console.log(`  [fetchData] Fetching roster...`);
     const roster = await fetchRoster(espnId);
+
     for (const p of roster) {
+      // match player name to PL photo
+      const normalized = normalizeName(p.name);
+      let photoUrl = photoMap.get(normalized) ?? null;
+
+      // fallback: try last-name-only match if full name didn't match
+      if (!photoUrl) {
+        const lastName = normalized.split(' ').slice(-1)[0];
+        for (const [plName, url] of photoMap.entries()) {
+          if (plName.endsWith(lastName) && plName.split(' ').length <= normalized.split(' ').length + 1) {
+            photoUrl = url;
+            break;
+          }
+        }
+      }
+
+      if (photoUrl) photoCount++;
+
       await db.run(
         `INSERT OR IGNORE INTO players
-           (team_id, name, position, goals, assists, is_legend)
-         VALUES (?, ?, ?, ?, ?, 0)`,
-        [espnId, p.name, p.position, p.goals, p.assists]
+           (team_id, name, position, goals, assists, is_legend, photo_url)
+         VALUES (?, ?, ?, ?, ?, 0, ?)`,
+        [espnId, p.name, p.position, p.goals, p.assists, photoUrl]
       );
       playerCount++;
     }
-    console.log(`  [fetchData] ${slug}: ${roster.length} players`);
+    console.log(`  [fetchData] ${slug}: ${roster.length} players, ${photoCount} with photos so far`);
 
     // season records + PL trophies
     console.log(`  [fetchData] Fetching season records...`);
@@ -220,7 +295,6 @@ async function fetchAndSeed() {
       const rec = await fetchSeasonRecord(espnId, espnYear);
       if (!rec) continue;
 
-      // insert W/D/L for recent 5 seasons only
       if (saveRecord) {
         await db.run(
           `INSERT OR IGNORE INTO seasons
@@ -231,7 +305,6 @@ async function fetchAndSeed() {
         seasonCount++;
       }
 
-      // PL trophy if rank = 1 (all 19 seasons)
       if (rec.position === 1) {
         await db.run(
           `INSERT OR IGNORE INTO trophies (team_id, competition, season)
@@ -244,7 +317,7 @@ async function fetchAndSeed() {
     }
   }
 
-  return { teamCount, playerCount, seasonCount, managerCount, trophyCount };
+  return { teamCount, playerCount, seasonCount, managerCount, trophyCount, photoCount };
 }
 
 module.exports = { fetchAndSeed };
