@@ -1,24 +1,23 @@
 # Big6Hub
 
-> Premier League Big 6 Information Hub
-> ITM519 Web Programming — SeoulTech 2026
-
 ![CI](https://github.com/Junseop1228/big6hub/actions/workflows/ci.yml/badge.svg)
 
-Big6Hub is a full-stack web application where football newcomers can browse
-club history, season records, and player profiles for Premier League's Big 6
-clubs in one place.
+A full-stack web application for Premier League Big 6 fans — explore clubs, squads, seasons, match results, trophies, and the latest news.
+
+**Live URL:** https://big6hub.onrender.com
+
+> Free tier — first request after inactivity may take ~30 seconds to wake up.
 
 ---
 
 ## Team
 
-| Name | Role | GitHub |
-|---|---|---|
-| Junseop Kim (lead) | Backend API + DB | @Junseop1228 |
-| Hyoungdo Kim | Backend Testing + CI + Docs | — |
-| Seongbin Lee | Frontend UI | @yeonlimee2 |
-| Geon Kim | Frontend Auth | — |
+| Name | Role |
+|---|---|
+| Junseop Kim | Team lead · Backend |
+| Seongbin Lee | Frontend UI |
+| Geon Kim | Frontend Auth & Data Rendering |
+| Hyoungdo Kim | Testing · CI · News |
 
 ---
 
@@ -26,12 +25,14 @@ clubs in one place.
 
 | Layer | Technology |
 |---|---|
-| Backend | Node.js + Express |
-| Database | SQLite |
-| Frontend | Vanilla HTML / CSS / JS |
-| Auth | JWT + bcrypt |
-| API Docs | Swagger / OpenAPI |
+| Runtime | Node.js 20 |
+| Framework | Express 4 |
+| Database | SQLite (via `sqlite` + `sqlite3`) |
+| Auth | JWT (`jsonwebtoken`) + bcrypt |
+| Frontend | Vanilla JS (ES6+), HTML5, CSS3 |
+| Testing | Jest + SuperTest |
 | CI | GitHub Actions |
+| Deployment | Render (free tier) |
 
 ---
 
@@ -39,44 +40,57 @@ clubs in one place.
 
 ### Prerequisites
 
-- Node.js v20 or higher
-- npm v10 or higher
+- Node.js 20+
+- npm 9+
 
 ### Setup
 
 ```bash
-# 1. Clone the repository
+# 1. Clone
 git clone https://github.com/Junseop1228/big6hub.git
 cd big6hub
 
 # 2. Install dependencies
 npm install
 
-# 3. Set up environment variables
+# 3. Configure environment
 cp .env.example .env
-# Edit .env and fill in your values
+# Edit .env — set JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
 
-# 4. Initialize the database
+# 4. Seed database (fetches live data from ESPN, PL, BBC APIs)
 npm run seed
 
-# 5. Start the server
+# 5. Start server
 npm start
 ```
 
-Open http://localhost:3000 in your browser.
+Open http://localhost:3000
 
 ---
 
 ## Environment Variables
 
-| Variable | Description | Example |
+| Variable | Required | Description |
 |---|---|---|
-| `PORT` | Server port | `3000` |
-| `DB_PATH` | SQLite database file path | `./database.db` |
-| `JWT_SECRET` | Secret key for JWT signing | `your-long-random-string` |
-| `ADMIN_EMAIL` | Admin account email | `admin@big6hub.test` |
-| `ADMIN_PASSWORD` | Admin account password | `Admin1234!` |
-| `FOOTBALL_DATA_API_KEY` | football-data.org API key | `your-api-key` |
+| `PORT` | No | Server port (default: 3000) |
+| `DB_PATH` | No | SQLite file path (default: `./database.db`) |
+| `JWT_SECRET` | **Yes** | Secret key for JWT signing — use a long random string |
+| `ADMIN_EMAIL` | **Yes** | Admin account email |
+| `ADMIN_PASSWORD` | **Yes** | Admin account password |
+
+---
+
+## Data Sources
+
+Seed fetches live data on every run — no static data files needed.
+
+| Source | Data | Auth |
+|---|---|---|
+| ESPN (unofficial) | Teams, players (goals/assists), season records (6 seasons), PL trophies (2006–present) | None |
+| Premier League Pulse API | Official player profile photos (250×250) | None |
+| BBC Sport RSS | Latest news per club (10 articles each) | None |
+
+**Seeded data:** 6 teams · 221 players · 36 season records · 19 PL trophies · 30 recent matches · 96 player photos · 60 news articles
 
 ---
 
@@ -86,58 +100,110 @@ Open http://localhost:3000 in your browser.
 npm test
 ```
 
-Test suites:
-
-| Suite | Location | Coverage |
-|---|---|---|
-| Unit tests | `tests/unit/` | Backend modules (models, middleware) |
-| API tests | `tests/api/` | Auth routes, error cases, main flow |
+- **32 tests** — 5 test suites (unit + API)
+- Tests use an in-memory SQLite database (`DB_PATH=:memory:`)
+- No `.env` required for CI
 
 ---
 
 ## API Documentation
 
-Start the server and visit:
+Swagger UI available at:
+- **Live:** https://big6hub.onrender.com/api-docs
+- **Local:** http://localhost:3000/api-docs
 
-```
-http://localhost:3000/api-docs
-```
+OpenAPI spec: [`openapi.yaml`](./openapi.yaml)
 
-Full OpenAPI spec: [`openapi.yaml`](openapi.yaml)
+### Endpoints Summary
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/api/auth/register` | — | Register new user |
+| POST | `/api/auth/login` | — | Login |
+| GET | `/api/auth/me` | JWT | Get current user |
+| GET | `/api/teams` | — | List all 6 teams |
+| GET | `/api/teams/:id` | — | Team detail (with trophies & managers) |
+| PUT | `/api/teams/:id` | Admin | Update team info |
+| GET | `/api/teams/:id/matches` | — | Recent & upcoming matches |
+| GET | `/api/players` | — | List players (filter by `team_id`) |
+| GET | `/api/players/:id` | — | Player detail |
+| POST | `/api/players` | Admin | Create player |
+| PUT | `/api/players/:id` | Admin | Update player |
+| DELETE | `/api/players/:id` | Admin | Delete player |
+| GET | `/api/seasons` | — | List seasons (filter by `team_id`) |
+| GET | `/api/seasons/:id` | — | Season detail |
+| POST | `/api/seasons` | Admin | Create season |
+| PUT | `/api/seasons/:id` | Admin | Update season |
+| DELETE | `/api/seasons/:id` | Admin | Delete season |
+| GET | `/api/favorites` | JWT | List my favorites |
+| POST | `/api/favorites` | JWT | Add to favorites |
+| DELETE | `/api/favorites/:id` | JWT | Remove from favorites |
+| GET | `/api/news` | — | News (filter by `team_id`) |
+| POST | `/api/news/refresh` | Admin | Refresh news from RSS |
 
 ---
 
 ## Project Structure
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full folder
-structure and request lifecycle.
+```
+big6hub/
+├── app.js              # Express app config (no listen)
+├── server.js           # Entry point — app.listen + initDb
+├── db.js               # SQLite init + getDb()
+├── seed.js             # DB seeding from live APIs
+├── openapi.yaml        # OpenAPI 3.0 spec
+├── controllers/        # Route handlers (auth, teams, players, seasons, favorites, news, matches)
+├── models/             # DB query functions
+├── middleware/         # requireAuth, requireAdmin
+├── routes/             # Express routers
+├── scripts/
+│   ├── fetchData.js    # ESPN + PL API data fetcher
+│   └── fetchNews.js    # BBC RSS news fetcher
+├── public/             # Static frontend (HTML, CSS, JS)
+│   ├── index.html
+│   ├── team.html
+│   ├── player.html
+│   ├── season.html
+│   ├── favorites.html
+│   ├── auth.html
+│   ├── admin.html
+│   ├── css/style.css
+│   └── js/             # api.js, session.js, home.js, team.js, ...
+├── tests/
+│   ├── setup.js        # JWT_SECRET + DB_PATH=:memory: for test isolation
+│   ├── unit/           # requireAuth.test.js, usersModel.test.js
+│   └── api/            # auth.test.js, teams.test.js, news.test.js
+└── docs/
+    ├── ARCHITECTURE.md
+    ├── GIT_POLICY.md
+    └── PREMISE.md
+```
+
+---
+
+## Security
+
+| Threat | Mitigation |
+|---|---|
+| **SQL Injection** | All queries use `?` parameterized placeholders |
+| **Broken Access Control (IDOR)** | `DELETE /api/favorites/:id` verifies `favorite.user_id === req.user.id` |
+| **Timing Attack** | `bcrypt.compare()` always runs even when user is not found |
+| **XSS** | Frontend uses `escapeHtml()` before all DOM insertions |
+| **Missing Auth** | `requireAuth` / `requireAdmin` middleware enforced server-side |
 
 ---
 
 ## Deployment
 
-Currently runs locally. To run on any machine:
+**Live URL:** https://big6hub.onrender.com
 
-```bash
-npm install && npm run seed && npm start
-```
+Deployed on Render (free tier). On every push to `main`, Render automatically:
+1. Runs `npm install`
+2. Starts the app with `npm start` (`node seed.js && node server.js`)
 
-Then open http://localhost:3000.
+The seed script fetches fresh data from ESPN, PL, and BBC APIs on each deploy.
 
 ---
-
-
-## Security
-
-The following vulnerability mitigations are implemented (per OWASP guidelines):
-
-| Threat | Mitigation |
-|---|---|
-| **SQL Injection** | All database queries use `?` parameterized placeholders — user input is never interpolated into SQL strings |
-| **Broken Access Control (IDOR)** | `DELETE /api/favorites/:id` verifies `favorite.user_id === req.user.id` before deletion — users cannot delete each other's favorites |
-| **Timing Attack** | Login always calls `bcrypt.compare()` even when the user email is not found, preventing user enumeration via response time |
-| **XSS** | Frontend uses `escapeHtml()` before injecting any API data into the DOM — no `innerHTML` with raw user input |
-| **Missing Auth** | Protected routes enforce `requireAuth` / `requireAdmin` middleware server-side — JWT validation cannot be bypassed by the client |
 
 ## AI Disclosure
 
@@ -149,10 +215,10 @@ This project was developed with the assistance of **Claude (Anthropic)**, an AI 
 |---|---|
 | Backend architecture | MVC folder structure, middleware design, route/controller/model separation |
 | API implementation | Express route handlers, JWT authentication, bcrypt password hashing |
-| Database | SQLite schema design, parameterized queries, migration patterns |
+| Database | SQLite schema design, parameterized queries, UNIQUE constraints |
 | Testing | Jest/SuperTest test structure, in-memory DB isolation strategy |
 | Data sourcing | ESPN unofficial API research, Premier League Pulse API integration |
-| Debugging | Error diagnosis across test failures, DB contamination issues, CSP headers |
+| Debugging | Error diagnosis across test failures, DB contamination issues, CSP headers, Render deployment |
 | Documentation | OpenAPI/Swagger schema writing, README sections |
 | Git workflow | Branch naming, commit message conventions, conflict resolution guidance |
 
@@ -165,7 +231,3 @@ Final decisions on architecture, data sources, and features were made by the tea
 ### Team members who used AI assistance
 
 - **Junseop Kim** (backend, team lead) — primary AI user for backend development
-
----
-
-*Last updated: 2026-05-28*
