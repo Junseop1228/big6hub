@@ -22,6 +22,8 @@ tags:
     description: Season records per club
   - name: Favorites
     description: Authenticated user's saved favorites
+  - name: News
+    description: Per-team news articles with AI-generated summaries
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Security scheme — JWT Bearer token
@@ -297,6 +299,36 @@ components:
         target_id:
           type: integer
           example: 1
+
+    # ── News ──────────────────────────────────────────────────────────────────
+    News:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        team_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Arsenal sign new midfielder
+        url:
+          type: string
+          example: https://www.bbc.co.uk/sport/football/12345678
+        source:
+          type: string
+          example: BBC Sport
+        published_at:
+          type: string
+          example: Sat, 07 Jun 2026 14:00:00 GMT
+        summary:
+          type: string
+          description: AI-generated summary of the article
+          example: Arsenal have completed the signing of a new midfielder...
+        created_at:
+          type: string
+          example: 2026-06-08 12:00:00
 
     # ── Error ─────────────────────────────────────────────────────────────────
     Error:
@@ -885,3 +917,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  # ── NEWS ─────────────────────────────────────────────────────────────────────
+  /api/news:
+    get:
+      tags: [News]
+      summary: List news — optionally filtered by team
+      parameters:
+        - name: team_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter news by team ID
+      responses:
+        '200':
+          description: Array of news objects (newest first)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/News'
