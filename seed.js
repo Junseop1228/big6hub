@@ -29,6 +29,7 @@ async function seed() {
   await db.run('DELETE FROM managers');
   await db.run('DELETE FROM trophies');
   await db.run('DELETE FROM seasons');
+  await db.run('DELETE FROM matches');
   await db.run('DELETE FROM players');
   // teams uses INSERT OR REPLACE so no need to delete
 
@@ -72,6 +73,7 @@ async function seed() {
   console.log(`  Managers inserted: ${summary.managerCount}`);
   console.log(`  Trophies inserted: ${summary.trophyCount}`);
   console.log(`  Photos matched:    ${summary.photoCount}`);
+  console.log(`  Matches inserted:  ${summary.matchCount}`);
   console.log(`  News inserted:     ${newsCount}`);
 
   process.exit(0);

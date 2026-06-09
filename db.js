@@ -87,6 +87,19 @@ async function initDb() {
       created_at   TEXT DEFAULT (datetime('now')),
       UNIQUE(team_id, url)
     );
+
+    CREATE TABLE IF NOT EXISTS matches (
+      id             INTEGER PRIMARY KEY AUTOINCREMENT,
+      team_id        INTEGER NOT NULL REFERENCES teams(id),
+      opponent       TEXT NOT NULL,
+      home_or_away   TEXT NOT NULL CHECK(home_or_away IN ('home','away')),
+      goals_for      INTEGER,
+      goals_against  INTEGER,
+      date           TEXT NOT NULL,
+      competition    TEXT DEFAULT 'Premier League',
+      is_upcoming    INTEGER DEFAULT 0,
+      UNIQUE(team_id, date, opponent)
+    );
     `);
 }
 

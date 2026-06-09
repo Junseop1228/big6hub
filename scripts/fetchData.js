@@ -263,12 +263,80 @@ async function fetchSeasonRecord(espnId, espnYear) {
   }
 }
 
+
+/**
+ * Fetches recent finished matches (last 5) and upcoming matches (next 3)
+ * from ESPN Site API for a given team.
+ *
+ * ESPN season year convention:
+ *   season=2024 -> 2024-25 (current completed season)
+ *   season=2025 -> 2025-26 (current/upcoming season)
+ *
+ * Returns array of match objects.
+ */
+async function fetchMatches(espnId) {
+  const matches = [];
+
+  for (const season of [2024, 2025]) {
+    try {
+      const data = await espnFetch(
+        `${ESPN_SITE}/teams/${espnId}/schedule?season=${season}`
+      );
+      const events = data.events ?? [];
+
+      for (const e of events) {
+        const comp = e.competitions?.[0];
+        if (!comp) continue;
+
+        const completed  = comp.status?.type?.completed ?? false;
+        const home       = comp.competitors?.find(c => c.homeAway === 'home');
+        const away       = comp.competitors?.find(c => c.homeAway === 'away');
+        if (!home || !away) continue;
+
+        const isHomeTeam = home.id === String(espnId);
+        const homeAway   = isHomeTeam ? 'home' : 'away';
+        const opponent   = isHomeTeam ? away.team.displayName : home.team.displayName;
+
+        const getScore = (c) => {
+          const s = c.score;
+          if (!s) return null;
+          const v = typeof s === 'object' ? s.displayValue : String(s);
+          const n = parseInt(v);
+          return isNaN(n) ? null : n;
+        };
+
+        const teamComp     = isHomeTeam ? home : away;
+        const opponentComp = isHomeTeam ? away : home;
+        const goalsFor     = completed ? getScore(teamComp)     : null;
+        const goalsAgainst = completed ? getScore(opponentComp) : null;
+
+        matches.push({
+          opponent,
+          home_or_away:   homeAway,
+          goals_for:      goalsFor,
+          goals_against:  goalsAgainst,
+          date:           e.date?.slice(0, 10) ?? null,
+          competition:    'Premier League',
+          is_upcoming:    completed ? 0 : 1,
+        });
+      }
+    } catch {
+      // season not available — skip
+    }
+  }
+
+  // Keep last 5 finished + next 3 upcoming
+  const finished = matches.filter(m => !m.is_upcoming).slice(-5);
+  const upcoming = matches.filter(m => m.is_upcoming).slice(0, 3);
+  return [...finished, ...upcoming];
+}
+
 // ── main export ───────────────────────────────────────────────────────────────
 
 async function fetchAndSeed() {
   const db = getDb();
   let teamCount = 0, playerCount = 0, seasonCount = 0,
-      managerCount = 0, trophyCount = 0, photoCount = 0;
+      managerCount = 0, trophyCount = 0, photoCount = 0, matchCount = 0;
 
   for (const { slug, espnId, plId } of BIG6) {
     console.log(`\n[fetchData] Processing ${slug} (ESPN id: ${espnId})...`);
@@ -344,9 +412,23 @@ async function fetchAndSeed() {
         console.log(`  [fetchData]   PL winner: ${slug} ${label}`);
       }
     }
+    // matches (recent 5 + upcoming 3)
+    console.log(`  [fetchData] Fetching matches...`);
+    const matches = await fetchMatches(espnId);
+    for (const m of matches) {
+      await db.run(
+        `INSERT OR IGNORE INTO matches
+           (team_id, opponent, home_or_away, goals_for, goals_against, date, competition, is_upcoming)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [espnId, m.opponent, m.home_or_away, m.goals_for, m.goals_against,
+         m.date, m.competition, m.is_upcoming]
+      );
+      matchCount++;
+    }
+    console.log(`  [fetchData] ${slug}: ${matches.length} matches`);
   }
 
-  return { teamCount, playerCount, seasonCount, managerCount, trophyCount, photoCount };
+  return { teamCount, playerCount, seasonCount, managerCount, trophyCount, photoCount, matchCount };
 }
 
 module.exports = { fetchAndSeed };
