@@ -52,6 +52,7 @@ async function fetchFeed(slug) {
       url: tag(b, 'link'),
       source: 'BBC Sport',
       published_at: tag(b, 'pubDate'),
+      description: tag(b, 'description'),
     }))
     .filter(a => a.title && !/find out more/i.test(a.title)) // drop promo items
     .slice(0, PER_TEAM);
