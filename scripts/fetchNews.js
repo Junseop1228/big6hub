@@ -38,6 +38,12 @@ function tag(block, name) {
   return m ? clean(m[1]) : '';
 }
 
+// convert an RSS pubDate ("Wed, 03 Jun 2026 ...") to a sortable ISO timestamp
+function toIsoDate(pubDate) {
+  const d = new Date(pubDate);
+  return isNaN(d.getTime()) ? pubDate : d.toISOString();
+}
+
 /**
  * Fetches and parses the latest articles for one BBC feed.
  */
@@ -51,7 +57,7 @@ async function fetchFeed(slug) {
       title: tag(b, 'title'),
       url: tag(b, 'link'),
       source: 'BBC Sport',
-      published_at: tag(b, 'pubDate'),
+      published_at: toIsoDate(tag(b, 'pubDate')),
       description: tag(b, 'description'),
     }))
     .filter(a => a.title && !/find out more/i.test(a.title)) // drop promo items
