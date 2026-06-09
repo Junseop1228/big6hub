@@ -85,6 +85,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 /* [team.html] home tab - 3-column grid */
 .main-grid { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 28px; align-items: start; }
 
+/* [team.html] more squad button */
+.squad-more-link { font-size: 12px; font-weight: 600; color: #767676; text-decoration: none; }
+.squad-more-link:hover { color: #222; }
+
 /* [team.html] home tab - match cards */
 .match-card {
   display: flex; align-items: center; justify-content: space-between;

@@ -65,7 +65,9 @@ function renderSquad(players) {
   const tbody = document.querySelector('#home .main-squad .tbl tbody');
   if (!tbody) return;
 
-  const squad = players.slice(0, 8);
+  const squad = [...players]
+  .sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists))
+  .slice(0, 8);
   tbody.innerHTML = squad.length > 0 ? squad.map(p => `
     <tr>
       <td><a href="player.html?id=${p.id}&slug=${slug}">${escapeHtml(p.name)}</a></td>
@@ -181,6 +183,18 @@ function renderTrophies(trophies) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadTeam();
+
+  const moreBtn = document.getElementById('squad-more-btn');
+  if (moreBtn) {
+    moreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('.tab-link[data-tab="players"]').classList.add('active');
+      document.getElementById('players').classList.add('active');
+    });
+  }
+  
   const tabParam = new URLSearchParams(window.location.search).get('tab');
   if (tabParam) {
     document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
