@@ -69,6 +69,17 @@ async function initDb() {
       kind      TEXT NOT NULL CHECK(kind IN ('team', 'player')),
       target_id INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS news (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      team_id      INTEGER NOT NULL REFERENCES teams(id),
+      title        TEXT NOT NULL,
+      url          TEXT,
+      source       TEXT,
+      published_at TEXT,
+      summary      TEXT,
+      created_at   TEXT DEFAULT (datetime('now'))
+    );
   `);
 };
 
