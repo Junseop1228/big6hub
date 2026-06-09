@@ -90,9 +90,35 @@ async function loadTeam() {
     renderTrophies(team.trophies || []);
     renderLinks(slug);
 
+    const [recentMatches, upcomingMatches] = await Promise.all([
+      apiFetch('/api/teams/' + team.id + '/matches?type=recent'),
+      apiFetch('/api/teams/' + team.id + '/matches?type=upcoming'),
+    ]);
+    renderMatches(recentMatches || [], upcomingMatches || []);
+
   } catch (err) {
     console.error('Failed to load team:', err.message);
   }
+}
+
+function renderMatches(recent, upcoming) {
+  const recentCards = document.querySelectorAll('#home .main-matches .match-card:not(.upcoming)');
+  const upcomingCards = document.querySelectorAll('#home .main-matches .match-card.upcoming');
+
+  recent.slice(0, 2).forEach((m, i) => {
+    if (!recentCards[i]) return;
+    recentCards[i].querySelector('.match-date').textContent = m.date ?? '—';
+    recentCards[i].querySelector('.match-teams').textContent = m.home_or_away === 'home'
+      ? `${slug} vs ${m.opponent}` : `${m.opponent} vs ${slug}`;
+    recentCards[i].querySelector('.match-score').textContent = `${m.goals_for} : ${m.goals_against}`;
+  });
+
+  upcoming.slice(0, 2).forEach((m, i) => {
+    if (!upcomingCards[i]) return;
+    upcomingCards[i].querySelector('.match-date').textContent = m.date ?? '—';
+    upcomingCards[i].querySelector('.match-teams').textContent = m.home_or_away === 'home'
+      ? `${slug} vs ${m.opponent}` : `${m.opponent} vs ${slug}`;
+  });
 }
 
 // ── Render current squad (home tab) ──────────────────────────────────────────
@@ -155,7 +181,7 @@ function renderSeasons(seasons) {
     </tr>
   `).join('');
 
-  const current = seasons[0];
+  const current = seasons[seasons.length - 1];
   if (current) {
     const rows = document.querySelectorAll('#home .season-status .season-row');
     const pos = current.final_position;
