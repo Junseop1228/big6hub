@@ -88,7 +88,7 @@ async function loadFavorites() {
       if (players.length > 0) {
         scroll.innerHTML = players.map(p => `
           <div class="fav-player-card" data-fav-id="${p.fav_id}">
-            <img src="${p.photo_url || ''}" alt="${escapeHtml(p.name)}" class="fav-player-photo" onerror="this.style.display='none'" ${p.photo_url ? '' : 'style="display:none"'}>
+            <img src="${p.photo_url || 'data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23e5e7eb'/%3E%3Ccircle cx='40' cy='30' r='16' fill='%239ca3af'/%3E%3Cellipse cx='40' cy='72' rx='26' ry='20' fill='%239ca3af'/%3E%3C/svg%3E'}" alt="${escapeHtml(p.name)}" class="fav-player-photo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23e5e7eb'/%3E%3Ccircle cx='40' cy='30' r='16' fill='%239ca3af'/%3E%3Cellipse cx='40' cy='72' rx='26' ry='20' fill='%239ca3af'/%3E%3C/svg%3E'">
             <div class="fav-player-info">
               <a href="player.html?id=${p.id}&slug=${team.slug}" class="fav-player-name">${escapeHtml(p.name)}</a>
               <span class="fav-player-position">${escapeHtml(p.position)}</span>
