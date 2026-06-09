@@ -25,16 +25,49 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// ── External links per club ───────────────────────────────────────────────────
+
+const TEAM_LINKS = {
+  arsenal: {
+    website: 'https://www.arsenal.com',
+    instagram: 'https://www.instagram.com/arsenal',
+    store: 'https://arsenaldirect.arsenal.com',
+  },
+  chelsea: {
+    website: 'https://www.chelseafc.com',
+    instagram: 'https://www.instagram.com/chelseafc',
+    store: 'https://www.chelseamegastore.com',
+  },
+  liverpool: {
+    website: 'https://www.liverpoolfc.com',
+    instagram: 'https://www.instagram.com/liverpoolfc',
+    store: 'https://store.liverpoolfc.com',
+  },
+  mancity: {
+    website: 'https://www.mancity.com',
+    instagram: 'https://www.instagram.com/mancity',
+    store: 'https://shop.mancity.com',
+  },
+  manutd: {
+    website: 'https://www.manutd.com',
+    instagram: 'https://www.instagram.com/manutd',
+    store: 'https://store.manutd.com',
+  },
+  tottenham: {
+    website: 'https://www.tottenhamhotspur.com',
+    instagram: 'https://www.instagram.com/spursofficial',
+    store: 'https://www.tottenhamhotspur.com/shop',
+  },
+};
+
 // ── Load team data ────────────────────────────────────────────────────────────
 
 async function loadTeam() {
   try {
-    // Get all teams to find the id for this slug
     const teams = await apiFetch('/api/teams');
     const teamBasic = teams.find(t => t.slug === slug);
     if (!teamBasic) return;
 
-    // Get full team detail (includes trophies + managers)
     const team = await apiFetch('/api/teams/' + teamBasic.id);
     if (!team) return;
 
@@ -55,6 +88,7 @@ async function loadTeam() {
     renderSeasons(seasons);
     renderInfo(team);
     renderTrophies(team.trophies || []);
+    renderLinks(slug);
 
   } catch (err) {
     console.error('Failed to load team:', err.message);
@@ -121,7 +155,6 @@ function renderSeasons(seasons) {
     </tr>
   `).join('');
 
-  // current season box (most recent)
   const current = seasons[0];
   if (current) {
     const rows = document.querySelectorAll('#home .season-status .season-row');
@@ -150,25 +183,22 @@ function renderInfo(team) {
 // ── Render trophies tab ───────────────────────────────────────────────────────
 
 function renderTrophies(trophies) {
-  // Count by competition category
   const counts = { League: 0, 'FA Cup': 0, 'League Cup': 0, UCL: 0, Europa: 0 };
   trophies.forEach(t => {
     const c = t.competition || '';
-    if (/premier league|first division/i.test(c))   counts['League']++;
-    else if (/fa cup/i.test(c))                      counts['FA Cup']++;
-    else if (/league cup|carabao|efl/i.test(c))      counts['League Cup']++;
+    if (/premier league|first division/i.test(c))      counts['League']++;
+    else if (/fa cup/i.test(c))                        counts['FA Cup']++;
+    else if (/league cup|carabao|efl/i.test(c))        counts['League Cup']++;
     else if (/champions league|european cup/i.test(c)) counts['UCL']++;
-    else if (/europa/i.test(c))                      counts['Europa']++;
+    else if (/europa/i.test(c))                        counts['Europa']++;
   });
 
-  // Update stat pills
   const pills = document.querySelectorAll('#trophies .stat-pill .val');
   const order = ['League', 'FA Cup', 'League Cup', 'UCL', 'Europa'];
   order.forEach((key, i) => {
     if (pills[i]) pills[i].textContent = counts[key] || '0';
   });
 
-  // Render trophy list table
   const tbody = document.querySelector('#trophies .tbl tbody');
   if (!tbody) return;
 
@@ -196,6 +226,20 @@ function sortPlayers(key) {
       <td>${p.assists ?? '—'}</td>
     </tr>
   `).join('');
+// ── Render external links ─────────────────────────────────────────────────────
+
+function renderLinks(teamSlug) {
+  const links = TEAM_LINKS[teamSlug];
+  if (!links) return;
+
+  const linkList = document.querySelector('.link-list');
+  if (!linkList) return;
+
+  linkList.innerHTML = `
+    <a href="${links.website}"  class="link-item" target="_blank" rel="noopener">Official Website</a>
+    <a href="${links.instagram}" class="link-item" target="_blank" rel="noopener">Instagram</a>
+    <a href="${links.store}"    class="link-item" target="_blank" rel="noopener">Official Store</a>
+  `;
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────

@@ -126,6 +126,19 @@ Then open http://localhost:3000.
 
 ---
 
+
+## Security
+
+The following vulnerability mitigations are implemented (per OWASP guidelines):
+
+| Threat | Mitigation |
+|---|---|
+| **SQL Injection** | All database queries use `?` parameterized placeholders — user input is never interpolated into SQL strings |
+| **Broken Access Control (IDOR)** | `DELETE /api/favorites/:id` verifies `favorite.user_id === req.user.id` before deletion — users cannot delete each other's favorites |
+| **Timing Attack** | Login always calls `bcrypt.compare()` even when the user email is not found, preventing user enumeration via response time |
+| **XSS** | Frontend uses `escapeHtml()` before injecting any API data into the DOM — no `innerHTML` with raw user input |
+| **Missing Auth** | Protected routes enforce `requireAuth` / `requireAdmin` middleware server-side — JWT validation cannot be bypassed by the client |
+
 ## AI Disclosure
 
 This project was developed with the assistance of **Claude (Anthropic)**, an AI assistant.
