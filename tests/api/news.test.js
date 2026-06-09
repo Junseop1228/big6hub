@@ -68,3 +68,14 @@ describe('GET /api/news?team_id=', () => {
     expect(res.body[0].title).toBe('Arsenal newer news');
   });
 });
+
+// ─── POST /api/news/refresh ─────────────────────────────────────────────────────
+
+describe('POST /api/news/refresh', () => {
+  test('401 — refresh requires authentication', async () => {
+    const res = await request(app).post('/api/news/refresh');
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toHaveProperty('code', 'UNAUTHORIZED');
+  });
+});
