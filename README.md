@@ -116,6 +116,12 @@ structure and request lifecycle.
 
 ## Deployment
 
+**Live URL:** https://big6hub.onrender.com
+
+> Note: Free tier — first request after inactivity may take ~30 seconds to wake up.
+
+To run locally, see [Quick Start](#quick-start) above.
+
 Currently runs locally. To run on any machine:
 
 ```bash
