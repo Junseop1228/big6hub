@@ -89,6 +89,7 @@ async function loadTeam() {
     renderInfo(team);
     renderTrophies(team.trophies || []);
     renderLinks(slug);
+    renderMatches(team.id);
 
   } catch (err) {
     console.error('Failed to load team:', err.message);
@@ -229,6 +230,64 @@ function sortPlayers(key) {
     </tr>
   `).join('');
 }
+// ── Render matches (home tab) ────────────────────────────────────────────────
+
+async function renderMatches(teamId) {
+  try {
+    const matches = await apiFetch('/api/teams/' + teamId + '/matches?type=all');
+    const recent   = matches.filter(m => !m.is_upcoming);
+    const upcoming = matches.filter(m => m.is_upcoming);
+
+    const container = document.querySelector('.main-matches');
+    if (!container) return;
+
+    const recentHtml = recent.length > 0
+      ? recent.slice(-3).reverse().map(m => {
+          const result = m.goals_for > m.goals_against ? 'W'
+                       : m.goals_for < m.goals_against ? 'L' : 'D';
+          const cls    = result === 'W' ? 'result-win' : result === 'L' ? 'result-loss' : '';
+          const isHome = m.home_or_away === 'home';
+          const date   = m.date ? new Date(m.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '—';
+          const teams  = isHome
+            ? `Us <span class="match-vs">vs</span> ${escapeHtml(m.opponent)}`
+            : `${escapeHtml(m.opponent)} <span class="match-vs">vs</span> Us`;
+          const score  = isHome
+            ? `${m.goals_for} : ${m.goals_against}`
+            : `${m.goals_against} : ${m.goals_for}`;
+          return `<div class="match-card">
+            <span class="match-date">${date}</span>
+            <span class="match-teams">${teams}</span>
+            <span class="match-score ${cls}">${score}</span>
+          </div>`;
+        }).join('')
+      : '<div class="match-card"><span class="match-teams">No recent matches</span></div>';
+
+    const upcomingHtml = upcoming.length > 0
+      ? upcoming.slice(0, 3).map(m => {
+          const isHome = m.home_or_away === 'home';
+          const date   = m.date ? new Date(m.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : 'TBD';
+          const teams  = isHome
+            ? `Us <span class="match-vs">vs</span> ${escapeHtml(m.opponent)}`
+            : `${escapeHtml(m.opponent)} <span class="match-vs">vs</span> Us`;
+          return `<div class="match-card upcoming">
+            <span class="match-date">${date}</span>
+            <span class="match-teams">${teams}</span>
+            <span class="match-score">TBD</span>
+          </div>`;
+        }).join('')
+      : '<div class="match-card upcoming"><span class="match-teams">No upcoming matches</span></div>';
+
+    container.innerHTML = `
+      <div class="section-title">Recent Matches</div>
+      ${recentHtml}
+      <div class="section-title" style="margin-top:20px;">Upcoming</div>
+      ${upcomingHtml}
+    `;
+  } catch (err) {
+    console.error('Failed to load matches:', err.message);
+  }
+}
+
 // ── Render external links ─────────────────────────────────────────────────────
 
 function renderLinks(teamSlug) {
