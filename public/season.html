@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Season — Big6Hub</title>
+  <style>:root { --team-color: #333333; }</style>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body class="page-season">
+
+  <nav class="global-nav">
+    <a href="index.html" class="logo">Big6<span>Hub</span></a>
+    <div class="auth">
+      <a href="auth.html" class="btn-login">Log in</a>
+      <a href="auth.html" class="btn-signup">Sign up</a>
+    </div>
+  </nav>
+
+  <div class="team-header">
+    <div class="container">
+      <a href="team.html" class="back-link">← Team Name</a>
+      <h1>Season</h1>
+    </div>
+  </div>
+
+  <div class="season-layout">
+    <nav class="side-nav">
+      <a href="#" class="side-link active" data-sec="summary">Summary</a>
+      <a href="#" class="side-link" data-sec="squad">Squad</a>
+      <a href="#" class="side-link" data-sec="matches">Match Results</a>
+    </nav>
+
+    <div class="side-content">
+
+      <div id="summary" class="sec active">
+        <div class="section-title">Season Summary</div>
+        <table class="tbl">
+          <thead><tr><th>Competition</th><th>W</th><th>D</th><th>L</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Premier League</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>Champions League</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>FA Cup</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>League Cup</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="squad" class="sec">
+        <div class="section-title">Squad</div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Name</th><th>Position</th><th>Goals</th><th>Assists</th></tr></thead>
+          <tbody>
+            <tr><td>—</td><td><a href="player.html">—</a></td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>—</td><td><a href="player.html">—</a></td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>—</td><td><a href="player.html">—</a></td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="matches" class="sec">
+        <div class="section-title">Match Results</div>
+        <div class="match-tabs">
+          <button class="match-tab active" data-comp="pl">Premier League</button>
+          <button class="match-tab" data-comp="ucl">Champions League</button>
+          <button class="match-tab" data-comp="fa">FA Cup</button>
+          <button class="match-tab" data-comp="lc">League Cup</button>
+        </div>
+        <table class="tbl" id="comp-pl">
+          <thead><tr><th>Date</th><th>Home</th><th>Score</th><th>Away</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>—</td><td>—</td><td>— : —</td><td>—</td><td><span class="rb w">W</span></td></tr>
+            <tr><td>—</td><td>—</td><td>— : —</td><td>—</td><td><span class="rb l">L</span></td></tr>
+            <tr><td>—</td><td>—</td><td>— : —</td><td>—</td><td><span class="rb d">D</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/season.js"></script>
+</body>
+</html>
