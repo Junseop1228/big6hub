@@ -27,7 +27,8 @@ async function initDb() {
       wins           INTEGER DEFAULT 0,
       draws          INTEGER DEFAULT 0,
       losses         INTEGER DEFAULT 0,
-      final_position INTEGER
+      final_position INTEGER,
+      UNIQUE(team_id, season)
     );
 
     CREATE TABLE IF NOT EXISTS players (
@@ -38,14 +39,16 @@ async function initDb() {
       goals     INTEGER DEFAULT 0,
       assists   INTEGER DEFAULT 0,
       is_legend INTEGER DEFAULT 0,
-      photo_url TEXT
+      photo_url TEXT,
+      UNIQUE(team_id, name)
     );
 
     CREATE TABLE IF NOT EXISTS trophies (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       team_id     INTEGER NOT NULL REFERENCES teams(id),
       competition TEXT NOT NULL,
-      season      TEXT NOT NULL
+      season      TEXT NOT NULL,
+      UNIQUE(team_id, competition, season)
     );
 
     CREATE TABLE IF NOT EXISTS managers (
@@ -54,7 +57,8 @@ async function initDb() {
       name       TEXT NOT NULL,
       start_year INTEGER,
       end_year   INTEGER,
-      is_current INTEGER DEFAULT 0
+      is_current INTEGER DEFAULT 0,
+      UNIQUE(team_id, name)
     );
 
     CREATE TABLE IF NOT EXISTS users (
@@ -82,6 +86,19 @@ async function initDb() {
       description  TEXT,
       created_at   TEXT DEFAULT (datetime('now')),
       UNIQUE(team_id, url)
+    );
+
+    CREATE TABLE IF NOT EXISTS matches (
+      id             INTEGER PRIMARY KEY AUTOINCREMENT,
+      team_id        INTEGER NOT NULL REFERENCES teams(id),
+      opponent       TEXT NOT NULL,
+      home_or_away   TEXT NOT NULL CHECK(home_or_away IN ('home','away')),
+      goals_for      INTEGER,
+      goals_against  INTEGER,
+      date           TEXT NOT NULL,
+      competition    TEXT DEFAULT 'Premier League',
+      is_upcoming    INTEGER DEFAULT 0,
+      UNIQUE(team_id, date, opponent)
     );
     `);
 }

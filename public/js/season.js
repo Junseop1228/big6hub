@@ -47,7 +47,7 @@ async function loadSeason() {
     // Back link
     const backLink = document.querySelector('.back-link');
     if (backLink) {
-      backLink.href = 'team.html?slug=' + teamSlug;
+      backLink.href = 'team.html?slug=' + teamSlug + '&tab=seasons';
       backLink.textContent = '← ' + teamName;
     }
 

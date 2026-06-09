@@ -47,6 +47,7 @@ const BIG6 = [
 
 // ESPN year = START year of season. saveRecord=true inserts W/D/L into seasons table.
 const SEASONS = [
+  { espnYear: 2025, label: '2025-26', saveRecord: true  },
   { espnYear: 2024, label: '2024-25', saveRecord: true  },
   { espnYear: 2023, label: '2023-24', saveRecord: true  },
   { espnYear: 2022, label: '2022-23', saveRecord: true  },
@@ -129,6 +130,48 @@ function normalizeName(name) {
     .replace(/[^a-z\s]/g, '')         // strip non-alpha
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/**
+ * Finds the best matching PL photo URL for an ESPN player name.
+ * Strategy: exact match -> prefix match -> token overlap with last name anchor.
+ */
+function findPhoto(espnName, photoMap) {
+  const norm = normalizeName(espnName);
+  const espnTokens = norm.split(' ');
+
+  // 1. Exact match
+  if (photoMap.has(norm)) return photoMap.get(norm);
+
+  let bestUrl = null;
+  let bestScore = 0;
+
+  for (const [plName, url] of photoMap.entries()) {
+    const plTokens = plName.split(' ');
+
+    // 2. ESPN name is a prefix of PL name (e.g. "mikel merino" in "mikel merino martinez")
+    if (plName.startsWith(norm + ' ') || plName === norm) return url;
+
+    // 3. PL name is a prefix of ESPN name
+    if (norm.startsWith(plName + ' ') || norm === plName) return url;
+
+    // 4. Token overlap: must share last name, need 2+ tokens or first+last
+    const espnLast = espnTokens[espnTokens.length - 1];
+    const plLast   = plTokens[plTokens.length - 1];
+    if (espnLast !== plLast) continue;
+
+    const overlap = espnTokens.filter(t => plTokens.includes(t) && t.length > 1);
+    const sharesFirst = espnTokens[0] === plTokens[0];
+    const confident = overlap.length >= 2 || (sharesFirst && espnLast === plLast);
+    if (!confident) continue;
+
+    if (overlap.length > bestScore) {
+      bestScore = overlap.length;
+      bestUrl   = url;
+    }
+  }
+
+  return bestUrl;
 }
 
 // ── data fetchers ─────────────────────────────────────────────────────────────
@@ -221,12 +264,80 @@ async function fetchSeasonRecord(espnId, espnYear) {
   }
 }
 
+
+/**
+ * Fetches recent finished matches (last 5) and upcoming matches (next 3)
+ * from ESPN Site API for a given team.
+ *
+ * ESPN season year convention:
+ *   season=2024 -> 2024-25 (current completed season)
+ *   season=2025 -> 2025-26 (current/upcoming season)
+ *
+ * Returns array of match objects.
+ */
+async function fetchMatches(espnId) {
+  const matches = [];
+
+  for (const season of [2024, 2025]) {
+    try {
+      const data = await espnFetch(
+        `${ESPN_SITE}/teams/${espnId}/schedule?season=${season}`
+      );
+      const events = data.events ?? [];
+
+      for (const e of events) {
+        const comp = e.competitions?.[0];
+        if (!comp) continue;
+
+        const completed  = comp.status?.type?.completed ?? false;
+        const home       = comp.competitors?.find(c => c.homeAway === 'home');
+        const away       = comp.competitors?.find(c => c.homeAway === 'away');
+        if (!home || !away) continue;
+
+        const isHomeTeam = home.id === String(espnId);
+        const homeAway   = isHomeTeam ? 'home' : 'away';
+        const opponent   = isHomeTeam ? away.team.displayName : home.team.displayName;
+
+        const getScore = (c) => {
+          const s = c.score;
+          if (!s) return null;
+          const v = typeof s === 'object' ? s.displayValue : String(s);
+          const n = parseInt(v);
+          return isNaN(n) ? null : n;
+        };
+
+        const teamComp     = isHomeTeam ? home : away;
+        const opponentComp = isHomeTeam ? away : home;
+        const goalsFor     = completed ? getScore(teamComp)     : null;
+        const goalsAgainst = completed ? getScore(opponentComp) : null;
+
+        matches.push({
+          opponent,
+          home_or_away:   homeAway,
+          goals_for:      goalsFor,
+          goals_against:  goalsAgainst,
+          date:           e.date?.slice(0, 10) ?? null,
+          competition:    'Premier League',
+          is_upcoming:    completed ? 0 : 1,
+        });
+      }
+    } catch {
+      // season not available — skip
+    }
+  }
+
+  // Keep last 5 finished + next 3 upcoming
+  const finished = matches.filter(m => !m.is_upcoming).slice(-5);
+  const upcoming = matches.filter(m => m.is_upcoming).slice(0, 3);
+  return [...finished, ...upcoming];
+}
+
 // ── main export ───────────────────────────────────────────────────────────────
 
 async function fetchAndSeed() {
   const db = getDb();
   let teamCount = 0, playerCount = 0, seasonCount = 0,
-      managerCount = 0, trophyCount = 0, photoCount = 0;
+      managerCount = 0, trophyCount = 0, photoCount = 0, matchCount = 0;
 
   for (const { slug, espnId, plId } of BIG6) {
     console.log(`\n[fetchData] Processing ${slug} (ESPN id: ${espnId})...`);
@@ -262,21 +373,8 @@ async function fetchAndSeed() {
     const roster = await fetchRoster(espnId);
 
     for (const p of roster) {
-      // match player name to PL photo
-      const normalized = normalizeName(p.name);
-      let photoUrl = photoMap.get(normalized) ?? null;
-
-      // fallback: try last-name-only match if full name didn't match
-      if (!photoUrl) {
-        const lastName = normalized.split(' ').slice(-1)[0];
-        for (const [plName, url] of photoMap.entries()) {
-          if (plName.endsWith(lastName) && plName.split(' ').length <= normalized.split(' ').length + 1) {
-            photoUrl = url;
-            break;
-          }
-        }
-      }
-
+      // match player name to PL photo using improved multi-strategy matching
+      const photoUrl = findPhoto(p.name, photoMap);
       if (photoUrl) photoCount++;
 
       await db.run(
@@ -315,9 +413,23 @@ async function fetchAndSeed() {
         console.log(`  [fetchData]   PL winner: ${slug} ${label}`);
       }
     }
+    // matches (recent 5 + upcoming 3)
+    console.log(`  [fetchData] Fetching matches...`);
+    const matches = await fetchMatches(espnId);
+    for (const m of matches) {
+      await db.run(
+        `INSERT OR IGNORE INTO matches
+           (team_id, opponent, home_or_away, goals_for, goals_against, date, competition, is_upcoming)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [espnId, m.opponent, m.home_or_away, m.goals_for, m.goals_against,
+         m.date, m.competition, m.is_upcoming]
+      );
+      matchCount++;
+    }
+    console.log(`  [fetchData] ${slug}: ${matches.length} matches`);
   }
 
-  return { teamCount, playerCount, seasonCount, managerCount, trophyCount, photoCount };
+  return { teamCount, playerCount, seasonCount, managerCount, trophyCount, photoCount, matchCount };
 }
 
 module.exports = { fetchAndSeed };

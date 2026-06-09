@@ -38,7 +38,10 @@
       <div id="home" class="tab-content active">
         <div class="main-grid">
           <div class="main-squad">
-            <div class="section-title">Current Squad</div>
+            <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+              Current Squad
+              <a href="#" class="squad-more-link" id="squad-more-btn">More ›</a>
+            </div>
             <table class="tbl">
               <thead><tr><th>Name</th><th>Pos</th><th>G</th><th>A</th></tr></thead>
               <tbody>
@@ -117,6 +120,13 @@
 
       <div id="players" class="tab-content">
         <div class="section-title">Squad</div>
+        <select id="player-sort">
+          <option value="">Sort by...</option>
+          <option value="name">Name</option>
+          <option value="goals">Goals</option>
+          <option value="assists">Assists</option>
+          <option value="position">Position</option>
+        </select>
         <table class="tbl">
           <thead><tr><th>Name</th><th>Position</th><th>Goals</th><th>Assists</th></tr></thead>
           <tbody>

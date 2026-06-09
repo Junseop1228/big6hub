@@ -8,12 +8,12 @@ sessionRequireLogin();
 // ── Team ID map (slug → id) ───────────────────────────────────────────────────
 
 const TEAM_ID_MAP = {
-  arsenal:   57,
-  chelsea:   61,
-  liverpool: 64,
-  mancity:   65,
-  manutd:    66,
-  tottenham: 73,
+  arsenal:   359,
+  chelsea:   363,
+  liverpool: 364,
+  mancity:   382,
+  manutd:    360,
+  tottenham: 367,
 };
 
 // ── Scroll buttons ────────────────────────────────────────────────────────────
@@ -88,6 +88,7 @@ async function loadFavorites() {
       if (players.length > 0) {
         scroll.innerHTML = players.map(p => `
           <div class="fav-player-card" data-fav-id="${p.fav_id}">
+            ${p.photo_url ? `<img src="${p.photo_url}" alt="${escapeHtml(p.name)}" class="fav-player-photo"/>` : '<div class="fav-player-photo" style="background:#f0f0f0;"></div>'}
             <div class="fav-player-info">
               <a href="player.html?id=${p.id}&slug=${team.slug}" class="fav-player-name">${escapeHtml(p.name)}</a>
               <span class="fav-player-position">${escapeHtml(p.position)}</span>

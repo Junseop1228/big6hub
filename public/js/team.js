@@ -15,6 +15,8 @@ document.querySelectorAll('.tab-link').forEach(link => {
   });
 });
 
+let allPlayers = [];
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function escapeHtml(str) {
@@ -23,16 +25,49 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// ── External links per club ───────────────────────────────────────────────────
+
+const TEAM_LINKS = {
+  arsenal: {
+    website: 'https://www.arsenal.com',
+    instagram: 'https://www.instagram.com/arsenal',
+    store: 'https://arsenaldirect.arsenal.com',
+  },
+  chelsea: {
+    website: 'https://www.chelseafc.com',
+    instagram: 'https://www.instagram.com/chelseafc',
+    store: 'https://www.chelseamegastore.com',
+  },
+  liverpool: {
+    website: 'https://www.liverpoolfc.com',
+    instagram: 'https://www.instagram.com/liverpoolfc',
+    store: 'https://store.liverpoolfc.com',
+  },
+  mancity: {
+    website: 'https://www.mancity.com',
+    instagram: 'https://www.instagram.com/mancity',
+    store: 'https://shop.mancity.com',
+  },
+  manutd: {
+    website: 'https://www.manutd.com',
+    instagram: 'https://www.instagram.com/manutd',
+    store: 'https://store.manutd.com',
+  },
+  tottenham: {
+    website: 'https://www.tottenhamhotspur.com',
+    instagram: 'https://www.instagram.com/spursofficial',
+    store: 'https://www.tottenhamhotspur.com/shop',
+  },
+};
+
 // ── Load team data ────────────────────────────────────────────────────────────
 
 async function loadTeam() {
   try {
-    // Get all teams to find the id for this slug
     const teams = await apiFetch('/api/teams');
     const teamBasic = teams.find(t => t.slug === slug);
     if (!teamBasic) return;
 
-    // Get full team detail (includes trophies + managers)
     const team = await apiFetch('/api/teams/' + teamBasic.id);
     if (!team) return;
 
@@ -53,6 +88,7 @@ async function loadTeam() {
     renderSeasons(seasons);
     renderInfo(team);
     renderTrophies(team.trophies || []);
+    renderLinks(slug);
 
   } catch (err) {
     console.error('Failed to load team:', err.message);
@@ -65,7 +101,9 @@ function renderSquad(players) {
   const tbody = document.querySelector('#home .main-squad .tbl tbody');
   if (!tbody) return;
 
-  const squad = players.slice(0, 8);
+  const squad = [...players]
+  .sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists))
+  .slice(0, 8);
   tbody.innerHTML = squad.length > 0 ? squad.map(p => `
     <tr>
       <td><a href="player.html?id=${p.id}&slug=${slug}">${escapeHtml(p.name)}</a></td>
@@ -79,6 +117,7 @@ function renderSquad(players) {
 // ── Render players tab ────────────────────────────────────────────────────────
 
 function renderPlayersTab(players) {
+  allPlayers = players;
   const tbody = document.querySelector('#players .tbl tbody');
   if (!tbody) return;
 
@@ -116,11 +155,12 @@ function renderSeasons(seasons) {
     </tr>
   `).join('');
 
-  // current season box (most recent)
   const current = seasons[0];
   if (current) {
     const rows = document.querySelectorAll('#home .season-status .season-row');
-    if (rows[0]) rows[0].querySelector('strong').textContent = current.final_position ? current.final_position + 'th' : '—';
+    const pos = current.final_position;
+    const ordinal = pos === 1 ? '1st' : pos === 2 ? '2nd' : pos === 3 ? '3rd' : pos + 'th';
+    if (rows[0]) rows[0].querySelector('strong').textContent = pos ? ordinal : '—';
     if (rows[1]) rows[1].querySelector('strong').textContent =
       `${current.wins ?? '—'} / ${current.draws ?? '—'} / ${current.losses ?? '—'}`;
   }
@@ -145,25 +185,22 @@ function renderInfo(team) {
 // ── Render trophies tab ───────────────────────────────────────────────────────
 
 function renderTrophies(trophies) {
-  // Count by competition category
   const counts = { League: 0, 'FA Cup': 0, 'League Cup': 0, UCL: 0, Europa: 0 };
   trophies.forEach(t => {
     const c = t.competition || '';
-    if (/premier league|first division/i.test(c))   counts['League']++;
-    else if (/fa cup/i.test(c))                      counts['FA Cup']++;
-    else if (/league cup|carabao|efl/i.test(c))      counts['League Cup']++;
+    if (/premier league|first division/i.test(c))      counts['League']++;
+    else if (/fa cup/i.test(c))                        counts['FA Cup']++;
+    else if (/league cup|carabao|efl/i.test(c))        counts['League Cup']++;
     else if (/champions league|european cup/i.test(c)) counts['UCL']++;
-    else if (/europa/i.test(c))                      counts['Europa']++;
+    else if (/europa/i.test(c))                        counts['Europa']++;
   });
 
-  // Update stat pills
   const pills = document.querySelectorAll('#trophies .stat-pill .val');
   const order = ['League', 'FA Cup', 'League Cup', 'UCL', 'Europa'];
   order.forEach((key, i) => {
     if (pills[i]) pills[i].textContent = counts[key] || '0';
   });
 
-  // Render trophy list table
   const tbody = document.querySelector('#trophies .tbl tbody');
   if (!tbody) return;
 
@@ -177,6 +214,62 @@ function renderTrophies(trophies) {
     : '<tr><td colspan="2">No trophy data available.</td></tr>';
 }
 
+function sortPlayers(key) {
+  if (!key) return;
+  const sorted = [...allPlayers].sort((a, b) => 
+    key === 'goals' || key === 'assists' ? (b[key] ?? 0) - (a[key] ?? 0) : a[key] > b[key] ? 1 : -1
+  );
+  const tbody = document.querySelector('#players .tbl tbody');
+  tbody.innerHTML = sorted.map(p => `
+    <tr>
+      <td><a href="player.html?id=${p.id}&slug=${slug}">${escapeHtml(p.name)}</a>${p.is_legend ? '<span class="badge-legend">Legend</span>' : ''}</td>
+      <td>${escapeHtml(p.position)}</td>
+      <td>${p.goals ?? '—'}</td>
+      <td>${p.assists ?? '—'}</td>
+    </tr>
+  `).join('');
+}
+// ── Render external links ─────────────────────────────────────────────────────
+
+function renderLinks(teamSlug) {
+  const links = TEAM_LINKS[teamSlug];
+  if (!links) return;
+
+  const linkList = document.querySelector('.link-list');
+  if (!linkList) return;
+
+  linkList.innerHTML = `
+    <a href="${links.website}"  class="link-item" target="_blank" rel="noopener">Official Website</a>
+    <a href="${links.instagram}" class="link-item" target="_blank" rel="noopener">Instagram</a>
+    <a href="${links.store}"    class="link-item" target="_blank" rel="noopener">Official Store</a>
+  `;
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', loadTeam);
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadTeam();
+
+  document.getElementById('player-sort').addEventListener('change', e => sortPlayers(e.target.value));
+
+  const moreBtn = document.getElementById('squad-more-btn');
+  if (moreBtn) {
+    moreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('.tab-link[data-tab="players"]').classList.add('active');
+      document.getElementById('players').classList.add('active');
+    });
+  }
+  
+  const tabParam = new URLSearchParams(window.location.search).get('tab');
+  if (tabParam) {
+    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const targetLink = document.querySelector(`.tab-link[data-tab="${tabParam}"]`);
+    const targetContent = document.getElementById(tabParam);
+    if (targetLink) targetLink.classList.add('active');
+    if (targetContent) targetContent.classList.add('active');
+  }
+});
