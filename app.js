@@ -14,7 +14,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:', 'https://crests.football-data.org'],
+        imgSrc: ["'self'", 'data:', 'https://a.espncdn.com'],
       },
     },
   })
@@ -23,7 +23,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Swagger UI — served at /api-docs
+// Swagger UI ??served at /api-docs
 const swaggerDoc = YAML.load('./openapi.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
