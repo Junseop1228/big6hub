@@ -401,3 +401,4 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 .news-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
 .news-desc { font-size: 13px; color: #767676; line-height: 1.5; }
 .news-date { font-size: 11px; color: #767676; margin-bottom: 4px; }
+.news-refresh-status { font-size: 12px; color: #767676; margin-left: 10px; }
