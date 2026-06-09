@@ -414,6 +414,46 @@ async function fetchAndSeed() {
       }
     }
     // matches (recent 5 + upcoming 3)
+    // ── Manual trophies: FA Cup / UCL / EFL (since 1992) ────────────────────
+    const MANUAL_TROPHIES = {
+      arsenal:   [
+        { competition: 'FA Cup', seasons: ['2002-03','2004-05','2013-14','2014-15','2016-17','2019-20'] },
+      ],
+      chelsea:   [
+        { competition: 'FA Cup',      seasons: ['1999-00','2006-07','2008-09','2009-10','2011-12','2017-18'] },
+        { competition: 'UCL',         seasons: ['2011-12','2020-21'] },
+        { competition: 'EFL Cup',     seasons: ['2004-05','2006-07','2014-15'] },
+      ],
+      liverpool: [
+        { competition: 'FA Cup',      seasons: ['2000-01','2005-06','2021-22'] },
+        { competition: 'UCL',         seasons: ['2004-05','2018-19'] },
+        { competition: 'EFL Cup',     seasons: ['2011-12','2021-22','2023-24'] },
+      ],
+      mancity:   [
+        { competition: 'FA Cup',      seasons: ['2010-11','2018-19','2022-23'] },
+        { competition: 'UCL',         seasons: ['2022-23'] },
+        { competition: 'EFL Cup',     seasons: ['2017-18','2018-19','2019-20','2020-21'] },
+      ],
+      manutd:    [
+        { competition: 'FA Cup',      seasons: ['1993-94','1995-96','1998-99','2003-04','2015-16'] },
+        { competition: 'UCL',         seasons: ['1998-99','2007-08'] },
+        { competition: 'EFL Cup',     seasons: ['1992-93','2005-06','2009-10'] },
+      ],
+      tottenham: [
+        { competition: 'EFL Cup',     seasons: ['2007-08'] },
+      ],
+    };
+    const manual = MANUAL_TROPHIES[slug] || [];
+    for (const { competition, seasons } of manual) {
+      for (const season of seasons) {
+        await db.run(
+          `INSERT OR IGNORE INTO trophies (team_id, competition, season) VALUES (?, ?, ?)`,
+          [espnId, competition, season]
+        );
+        trophyCount++;
+      }
+    }
+
     console.log(`  [fetchData] Fetching matches...`);
     const matches = await fetchMatches(espnId);
     for (const m of matches) {
