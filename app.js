@@ -33,5 +33,6 @@ app.use('/api/teams',     require('./routes/teams'));
 app.use('/api/players',   require('./routes/players'));
 app.use('/api/seasons',   require('./routes/seasons'));
 app.use('/api/favorites', require('./routes/favorites'));
+app.use('/api/news',      require('./routes/news'));
 
 module.exports = app;
