@@ -275,13 +275,15 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 
 /* [favorites.html] player card */
 .fav-player-card {
-  flex-shrink: 0; width: 140px;
+  flex-shrink: 0; width: 120px;
   border: 1px solid #ebebeb; border-radius: 12px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 12px; gap: 6px;
-  background: #fff;
+  overflow: hidden; background: #fff;
+  display: flex; flex-direction: column;
 }
-.fav-player-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.fav-player-photo { width: 100%; height: 80px; object-fit: cover; object-position: top; display: block; }
+.fav-player-info { padding: 8px 10px; }
+.fav-player-card { position: relative; }
+.fav-remove-btn { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.8); border-radius: 50%; width: 20px; height: 20px; }
 
 /* [favorites.html] player card - top (white area + remove btn) */
 .fav-player-card-top { height: 120px; background: #fff; display: flex; align-items: flex-start; justify-content: flex-end; padding: 8px 8px 0; }
