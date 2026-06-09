@@ -47,6 +47,7 @@ const BIG6 = [
 
 // ESPN year = START year of season. saveRecord=true inserts W/D/L into seasons table.
 const SEASONS = [
+  { espnYear: 2025, label: '2025-26', saveRecord: true  },
   { espnYear: 2024, label: '2024-25', saveRecord: true  },
   { espnYear: 2023, label: '2023-24', saveRecord: true  },
   { espnYear: 2022, label: '2022-23', saveRecord: true  },
