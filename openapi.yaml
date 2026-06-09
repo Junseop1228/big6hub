@@ -939,3 +939,33 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/News'
+
+  /api/news/refresh:
+    post:
+      tags: [News]
+      summary: Re-fetch the latest news from RSS feeds (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: News refreshed — returns the number of articles stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stored:
+                    type: integer
+                    example: 60
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
