@@ -131,6 +131,48 @@ function normalizeName(name) {
     .trim();
 }
 
+/**
+ * Finds the best matching PL photo URL for an ESPN player name.
+ * Strategy: exact match -> prefix match -> token overlap with last name anchor.
+ */
+function findPhoto(espnName, photoMap) {
+  const norm = normalizeName(espnName);
+  const espnTokens = norm.split(' ');
+
+  // 1. Exact match
+  if (photoMap.has(norm)) return photoMap.get(norm);
+
+  let bestUrl = null;
+  let bestScore = 0;
+
+  for (const [plName, url] of photoMap.entries()) {
+    const plTokens = plName.split(' ');
+
+    // 2. ESPN name is a prefix of PL name (e.g. "mikel merino" in "mikel merino martinez")
+    if (plName.startsWith(norm + ' ') || plName === norm) return url;
+
+    // 3. PL name is a prefix of ESPN name
+    if (norm.startsWith(plName + ' ') || norm === plName) return url;
+
+    // 4. Token overlap: must share last name, need 2+ tokens or first+last
+    const espnLast = espnTokens[espnTokens.length - 1];
+    const plLast   = plTokens[plTokens.length - 1];
+    if (espnLast !== plLast) continue;
+
+    const overlap = espnTokens.filter(t => plTokens.includes(t) && t.length > 1);
+    const sharesFirst = espnTokens[0] === plTokens[0];
+    const confident = overlap.length >= 2 || (sharesFirst && espnLast === plLast);
+    if (!confident) continue;
+
+    if (overlap.length > bestScore) {
+      bestScore = overlap.length;
+      bestUrl   = url;
+    }
+  }
+
+  return bestUrl;
+}
+
 // ── data fetchers ─────────────────────────────────────────────────────────────
 
 /**
@@ -262,21 +304,8 @@ async function fetchAndSeed() {
     const roster = await fetchRoster(espnId);
 
     for (const p of roster) {
-      // match player name to PL photo
-      const normalized = normalizeName(p.name);
-      let photoUrl = photoMap.get(normalized) ?? null;
-
-      // fallback: try last-name-only match if full name didn't match
-      if (!photoUrl) {
-        const lastName = normalized.split(' ').slice(-1)[0];
-        for (const [plName, url] of photoMap.entries()) {
-          if (plName.endsWith(lastName) && plName.split(' ').length <= normalized.split(' ').length + 1) {
-            photoUrl = url;
-            break;
-          }
-        }
-      }
-
+      // match player name to PL photo using improved multi-strategy matching
+      const photoUrl = findPhoto(p.name, photoMap);
       if (photoUrl) photoCount++;
 
       await db.run(
