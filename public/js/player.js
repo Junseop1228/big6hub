@@ -42,6 +42,8 @@ async function loadPlayer() {
 
     // header
     document.querySelector('h1').textContent = player.name;
+    const photoEl = document.getElementById('player-photo');
+    if (photoEl && player.photo_url) photoEl.src = player.photo_url;
     document.querySelector('.meta').textContent = (player.position || '—') + ' · ' + teamName;
     document.title = player.name + ' — Big6Hub';
 

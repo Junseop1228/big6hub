@@ -188,6 +188,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   color: #767676; cursor: not-allowed;
 }
 
+/* [player.html] photo */
+.profile-layout { display: grid; grid-template-columns: 1fr 280px; gap: 32px; align-items: start; }
+.profile-right { display: flex; justify-content: center; padding-top: 32px; }
+.player-photo { width: 240px; height: 280px; object-fit: cover; border-radius: 12px; background: #f5f5f5; display: block; }
+
 /* [auth.html] */
 .auth-page {
   min-height: calc(100vh - 56px);
