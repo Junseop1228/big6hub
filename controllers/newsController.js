@@ -1,4 +1,5 @@
 const { getNews } = require('../models/newsModel');
+const { fetchAndSeedNews } = require('../scripts/fetchNews');
 
 /**
  * GET /api/news?team_id=
@@ -13,4 +14,17 @@ async function getNewsHandler(req, res) {
   }
 }
 
-module.exports = { getNewsHandler };
+/**
+ * POST /api/news/refresh  (admin only)
+ * Re-fetches the latest news from the RSS feeds (accumulates, dedupe by url).
+ */
+async function refreshNewsHandler(req, res) {
+  try {
+    const result = await fetchAndSeedNews();
+    return res.status(200).json({ stored: result.stored });
+  } catch (err) {
+    throw err;
+  }
+}
+
+module.exports = { getNewsHandler, refreshNewsHandler };

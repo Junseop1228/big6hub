@@ -20,6 +20,7 @@
         <a href="#" class="tab-link active" data-tab="teams">Teams</a>
         <a href="#" class="tab-link" data-tab="players">Players</a>
         <a href="#" class="tab-link" data-tab="seasons">Seasons</a>
+        <a href="#" class="tab-link" data-tab="news">News</a>
       </nav>
     </div>
   </div>
@@ -143,11 +144,21 @@
         </table>
       </div>
 
+      <!-- ── News ──────────────────────────────────────────────────────────── -->
+      <div id="news" class="tab-content">
+        <div class="admin-toolbar">
+          <div class="section-title">News</div>
+          <button class="admin-btn-add" id="btn-refresh-news">↻ Refresh News</button>
+        </div>
+        <span id="news-refresh-status" class="news-refresh-status"></span>
+      </div>
+
     </div>
   </div>
 
   <script src="js/session.js"></script>
   <script src="js/api.js"></script>
   <script src="js/admin.js"></script>
+  <script src="js/news-admin.js"></script>
 </body>
 </html>
