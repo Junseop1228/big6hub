@@ -8,12 +8,12 @@ sessionRequireLogin();
 // ── Team ID map (slug → id) ───────────────────────────────────────────────────
 
 const TEAM_ID_MAP = {
-  arsenal:   57,
-  chelsea:   61,
-  liverpool: 64,
-  mancity:   65,
-  manutd:    66,
-  tottenham: 73,
+  arsenal:   359,
+  chelsea:   363,
+  liverpool: 364,
+  mancity:   382,
+  manutd:    360,
+  tottenham: 367,
 };
 
 // ── Scroll buttons ────────────────────────────────────────────────────────────
