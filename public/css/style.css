@@ -390,3 +390,14 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   font-size: 14px;
   flex-shrink: 0;
 }
+/* ── News tab ────────────────────────────────────────────────────────────── */
+#news-list { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
+.news-item {
+  display: block; padding: 12px 14px;
+  border: 1px solid #ebebeb; border-radius: 10px;
+  text-decoration: none; color: #222; transition: background 0.15s;
+}
+.news-item:hover { background: #fafafa; }
+.news-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.news-desc { font-size: 13px; color: #767676; line-height: 1.5; }
+.news-date { font-size: 11px; color: #767676; margin-bottom: 4px; }
