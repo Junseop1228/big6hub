@@ -89,6 +89,7 @@ async function loadTeam() {
     renderInfo(team);
     renderTrophies(team.trophies || []);
     renderLinks(slug);
+    renderMatches(team.id);
 
   } catch (err) {
     console.error('Failed to load team:', err.message);
@@ -229,6 +230,62 @@ function sortPlayers(key) {
     </tr>
   `).join('');
 }
+// ── Render matches (home tab) ────────────────────────────────────────────────
+
+async function renderMatches(teamId) {
+  try {
+    const matches = await apiFetch('/api/teams/' + teamId + '/matches?type=all');
+    const recent   = matches.filter(m => !m.is_upcoming);
+    const upcoming = matches.filter(m => m.is_upcoming);
+
+    // Recent Matches
+    const recentTbody = document.querySelector('.recent-matches tbody');
+    if (recentTbody) {
+      if (recent.length > 0) {
+        recentTbody.innerHTML = recent.slice(-3).reverse().map(m => {
+          const result = m.goals_for > m.goals_against ? 'W'
+                       : m.goals_for < m.goals_against ? 'L' : 'D';
+          const cls    = result === 'W' ? 'result-w' : result === 'L' ? 'result-l' : 'result-d';
+          const isHome = m.home_or_away === 'home';
+          const home   = isHome ? 'Us' : m.opponent;
+          const away   = isHome ? m.opponent : 'Us';
+          return `<tr>
+            <td>${home}</td>
+            <td class="score-col">${m.goals_for} : ${m.goals_against}</td>
+            <td>${away}</td>
+            <td><span class="badge-result ${cls}">${result}</span></td>
+          </tr>`;
+        }).join('');
+      } else {
+        recentTbody.innerHTML = '<tr><td colspan="4">No recent matches.</td></tr>';
+      }
+    }
+
+    // Upcoming Matches
+    const upcomingTbody = document.querySelector('.upcoming-matches tbody');
+    if (upcomingTbody) {
+      if (upcoming.length > 0) {
+        upcomingTbody.innerHTML = upcoming.slice(0, 3).map(m => {
+          const isHome = m.home_or_away === 'home';
+          const home   = isHome ? 'Us' : m.opponent;
+          const away   = isHome ? m.opponent : 'Us';
+          const date   = m.date ? new Date(m.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : 'TBD';
+          return `<tr>
+            <td>${home}</td>
+            <td class="score-col">— vs —</td>
+            <td>${away}</td>
+            <td>${date}</td>
+          </tr>`;
+        }).join('');
+      } else {
+        upcomingTbody.innerHTML = '<tr><td colspan="4">No upcoming matches.</td></tr>';
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load matches:', err.message);
+  }
+}
+
 // ── Render external links ─────────────────────────────────────────────────────
 
 function renderLinks(teamSlug) {
