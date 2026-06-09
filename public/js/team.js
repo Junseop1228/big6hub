@@ -226,6 +226,7 @@ function sortPlayers(key) {
       <td>${p.assists ?? '—'}</td>
     </tr>
   `).join('');
+}
 // ── Render external links ─────────────────────────────────────────────────────
 
 function renderLinks(teamSlug) {
