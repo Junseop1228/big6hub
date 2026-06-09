@@ -59,8 +59,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 }
 .team-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
 .team-card-img { height: 110px; background: #f7f7f7; }
+.team-card-logo { width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto; padding-top: 15px; }
 .team-card-body { padding: 14px 16px; text-align: center; }
-.team-card-body .name { font-size: 15px; font-weight: 700; }
+.team-card-body .name { font-size: 15px; font-weight: 700; color: #fff;}
 
 /* [team.html] header */
 .team-header { background: var(--team-color, #1a237e); color: #fff; padding: 20px 40px 0; }
@@ -83,6 +84,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 
 /* [team.html] home tab - 3-column grid */
 .main-grid { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 28px; align-items: start; }
+
+/* [team.html] more squad button */
+.squad-more-link { font-size: 12px; font-weight: 600; color: #767676; text-decoration: none; }
+.squad-more-link:hover { color: #222; }
 
 /* [team.html] home tab - match cards */
 .match-card {
@@ -187,6 +192,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
   color: #767676; cursor: not-allowed;
 }
 
+/* [player.html] photo */
+.profile-layout { display: grid; grid-template-columns: 1fr 280px; gap: 32px; align-items: start; }
+.profile-right { display: flex; justify-content: center; padding-top: 32px; }
+.player-photo { width: 240px; height: 280px; object-fit: cover; border-radius: 12px; background: #f5f5f5; display: block; }
+
 /* [auth.html] */
 .auth-page {
   min-height: calc(100vh - 56px);
@@ -252,7 +262,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #2
 
 /* [favorites.html] team card - logo column */
 .fav-logo-col { display: flex; align-items: center; justify-content: center; border-right: 1px solid #ebebeb; padding: 16px 10px; }
-.fav-logo-img { width: 48px; height: 48px; object-fit: contain; }
+.fav-logo-img { width: 80px; height: 80px; object-fit: contain; }
 
 /* [favorites.html] team card - players column */
 .fav-players-col { padding: 12px 16px; min-width: 0; display: flex; align-items: center; }

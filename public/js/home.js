@@ -13,10 +13,10 @@ async function loadTeams() {
 
   grid.innerHTML = teams.map(t => `
     <a href="team.html?slug=${t.slug}" class="team-card">
-      <div class="team-card-img" style="background:${TEAM_COLORS[t.slug] || '#333'};">
+      <div class="team-card-img" style="background:#fff;">
         ${t.logo_url ? `<img src="${t.logo_url}" alt="${t.name} logo" class="team-card-logo"/>` : ''}
       </div>
-      <div class="team-card-body"><div class="name">${t.name}</div></div>
+      <div class="team-card-body" style="background:${TEAM_COLORS[t.slug] || '#333'};"><div class="name">${t.name}</div></div>
     </a>
   `).join('');
 }

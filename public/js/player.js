@@ -42,13 +42,15 @@ async function loadPlayer() {
 
     // header
     document.querySelector('h1').textContent = player.name;
+    const photoEl = document.getElementById('player-photo');
+    if (photoEl && player.photo_url) photoEl.src = player.photo_url;
     document.querySelector('.meta').textContent = (player.position || '—') + ' · ' + teamName;
     document.title = player.name + ' — Big6Hub';
 
     // back link
     const backLink = document.querySelector('.back-link');
     if (backLink) {
-      backLink.href        = 'team.html?slug=' + teamSlug;
+      backLink.href        = 'team.html?slug=' + teamSlug + '&tab=players';
       backLink.textContent = '← ' + teamName;
     }
 
@@ -70,7 +72,7 @@ async function loadPlayer() {
     if (rows[3]) rows[3].cells[1].textContent = player.is_legend ? 'Yes' : 'No';
 
     // record tab — show current team stats (no per-season breakdown in DB)
-    renderRecord(player, teamName);
+    await renderRecord(player, teamName);
 
     // honours tab — uses team trophies if player is a legend, otherwise empty
     renderHonours(player, team);
@@ -85,14 +87,16 @@ async function loadPlayer() {
 
 // ── Render record tab ─────────────────────────────────────────────────────────
 
-function renderRecord(player, teamName) {
+async function renderRecord(player, teamName) {
   const tbody = document.querySelector('#record .tbl tbody');
   if (!tbody) return;
 
-  // DB has aggregate stats only (no per-season breakdown), show as a single row
+  const seasons = await apiFetch('/api/seasons?team_id=' + player.team_id);
+  const current = seasons?.[0];
+
   tbody.innerHTML = `
     <tr>
-      <td>—</td>
+      <td>${current?.season ?? '—'}</td>
       <td>${escapeHtml(teamName)}</td>
       <td>${player.goals   ?? '—'}</td>
       <td>${player.assists ?? '—'}</td>

@@ -15,6 +15,8 @@ document.querySelectorAll('.tab-link').forEach(link => {
   });
 });
 
+let allPlayers = [];
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function escapeHtml(str) {
@@ -99,7 +101,9 @@ function renderSquad(players) {
   const tbody = document.querySelector('#home .main-squad .tbl tbody');
   if (!tbody) return;
 
-  const squad = players.slice(0, 8);
+  const squad = [...players]
+  .sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists))
+  .slice(0, 8);
   tbody.innerHTML = squad.length > 0 ? squad.map(p => `
     <tr>
       <td><a href="player.html?id=${p.id}&slug=${slug}">${escapeHtml(p.name)}</a></td>
@@ -113,6 +117,7 @@ function renderSquad(players) {
 // ── Render players tab ────────────────────────────────────────────────────────
 
 function renderPlayersTab(players) {
+  allPlayers = players;
   const tbody = document.querySelector('#players .tbl tbody');
   if (!tbody) return;
 
@@ -207,6 +212,21 @@ function renderTrophies(trophies) {
     : '<tr><td colspan="2">No trophy data available.</td></tr>';
 }
 
+function sortPlayers(key) {
+  if (!key) return;
+  const sorted = [...allPlayers].sort((a, b) => 
+    key === 'goals' || key === 'assists' ? (b[key] ?? 0) - (a[key] ?? 0) : a[key] > b[key] ? 1 : -1
+  );
+  const tbody = document.querySelector('#players .tbl tbody');
+  tbody.innerHTML = sorted.map(p => `
+    <tr>
+      <td><a href="player.html?id=${p.id}&slug=${slug}">${escapeHtml(p.name)}</a>${p.is_legend ? '<span class="badge-legend">Legend</span>' : ''}</td>
+      <td>${escapeHtml(p.position)}</td>
+      <td>${p.goals ?? '—'}</td>
+      <td>${p.assists ?? '—'}</td>
+    </tr>
+  `).join('');
+}
 // ── Render external links ─────────────────────────────────────────────────────
 
 function renderLinks(teamSlug) {
@@ -225,4 +245,29 @@ function renderLinks(teamSlug) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', loadTeam);
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadTeam();
+
+  document.getElementById('player-sort').addEventListener('change', e => sortPlayers(e.target.value));
+
+  const moreBtn = document.getElementById('squad-more-btn');
+  if (moreBtn) {
+    moreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector('.tab-link[data-tab="players"]').classList.add('active');
+      document.getElementById('players').classList.add('active');
+    });
+  }
+  
+  const tabParam = new URLSearchParams(window.location.search).get('tab');
+  if (tabParam) {
+    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const targetLink = document.querySelector(`.tab-link[data-tab="${tabParam}"]`);
+    const targetContent = document.getElementById(tabParam);
+    if (targetLink) targetLink.classList.add('active');
+    if (targetContent) targetContent.classList.add('active');
+  }
+});
