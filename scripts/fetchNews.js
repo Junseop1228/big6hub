@@ -2,7 +2,7 @@
  * scripts/fetchNews.js
  *
  * Fetches the latest news for each Big 6 club from BBC Sport RSS feeds and
- * stores them in the news table. Called by seed.js — do not run directly.
+ * stores them in the news table. Called by seed.js ??do not run directly.
  *
  * News accumulates over runs; duplicates are skipped by newsModel.createNews
  * (dedupe by team_id + url).
@@ -11,19 +11,19 @@
 require('dotenv').config();
 const { createNews } = require('../models/newsModel');
 
-// DB team id → BBC Sport RSS feed slug
+// DB team id ??BBC Sport RSS feed slug
 const BBC_FEED = {
-  57: 'arsenal',
-  61: 'chelsea',
-  64: 'liverpool',
-  65: 'manchester-city',
-  66: 'manchester-united',
-  73: 'tottenham-hotspur',
+  359: 'arsenal',
+  363: 'chelsea',
+  364: 'liverpool',
+  382: 'manchester-city',
+  360: 'manchester-united',
+  367: 'tottenham-hotspur',
 };
 const FEED_URL = slug => `https://feeds.bbci.co.uk/sport/football/teams/${slug}/rss.xml`;
 const PER_TEAM = 10;
 
-// ── RSS parsing helpers ───────────────────────────────────────────────────────
+// ?? RSS parsing helpers ???????????????????????????????????????????????????????
 function clean(s) {
   return (s || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1') // strip CDATA
@@ -65,7 +65,7 @@ async function fetchFeed(slug) {
 }
 
 /**
- * Main export — fetches news for all Big 6 teams and stores them.
+ * Main export ??fetches news for all Big 6 teams and stores them.
  * Resilient: a failing feed is skipped, the rest continue.
  * Returns a summary object for logging.
  */
