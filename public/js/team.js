@@ -44,7 +44,7 @@ const TEAM_LINKS = {
   mancity: {
     website: 'https://www.mancity.com',
     instagram: 'https://www.instagram.com/mancity',
-    store: 'https://www.mancitystore.com',
+    store: 'https://shop.mancity.com',
   },
   manutd: {
     website: 'https://www.manutd.com',
