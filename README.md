@@ -1,4 +1,4 @@
-﻿# Big6Hub
+# Big6Hub
 
 > Premier League Big 6 Information Hub
 > ITM519 Web Programming — SeoulTech 2026
@@ -128,7 +128,30 @@ Then open http://localhost:3000.
 
 ## AI Disclosure
 
-<!-- TODO: fill in before final submission (2026-06-09) -->
+This project was developed with the assistance of **Claude (Anthropic)**, an AI assistant.
+
+### How AI was used
+
+| Area | Description |
+|---|---|
+| Backend architecture | MVC folder structure, middleware design, route/controller/model separation |
+| API implementation | Express route handlers, JWT authentication, bcrypt password hashing |
+| Database | SQLite schema design, parameterized queries, migration patterns |
+| Testing | Jest/SuperTest test structure, in-memory DB isolation strategy |
+| Data sourcing | ESPN unofficial API research, Premier League Pulse API integration |
+| Debugging | Error diagnosis across test failures, DB contamination issues, CSP headers |
+| Documentation | OpenAPI/Swagger schema writing, README sections |
+| Git workflow | Branch naming, commit message conventions, conflict resolution guidance |
+
+### What was not AI-generated
+
+All code was reviewed, understood, and approved by the team before committing.
+Frontend UI/UX design and HTML/CSS were authored by team members.
+Final decisions on architecture, data sources, and features were made by the team.
+
+### Team members who used AI assistance
+
+- **Junseop Kim** (backend, team lead) — primary AI user for backend development
 
 ---
 
