@@ -37,7 +37,8 @@ async function initDb() {
       position  TEXT,
       goals     INTEGER DEFAULT 0,
       assists   INTEGER DEFAULT 0,
-      is_legend INTEGER DEFAULT 0
+      is_legend INTEGER DEFAULT 0,
+      photo_url TEXT
     );
 
     CREATE TABLE IF NOT EXISTS trophies (
@@ -66,8 +67,9 @@ async function initDb() {
     CREATE TABLE IF NOT EXISTS favorites (
       id        INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id   INTEGER NOT NULL REFERENCES users(id),
-      kind      TEXT NOT NULL CHECK(kind IN ('team', 'player')),
-      target_id INTEGER NOT NULL
+      kind      TEXT NOT NULL,
+      target_id INTEGER NOT NULL,
+      UNIQUE(user_id, kind, target_id)
     );
 
     CREATE TABLE IF NOT EXISTS news (
@@ -78,10 +80,11 @@ async function initDb() {
       source       TEXT,
       published_at TEXT,
       description  TEXT,
-      created_at   TEXT DEFAULT (datetime('now'))
+      created_at   TEXT DEFAULT (datetime('now')),
+      UNIQUE(team_id, url)
     );
-  `);
-};
+    `);
+}
 
 function getDb() {
     return db;

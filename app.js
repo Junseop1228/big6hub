@@ -14,7 +14,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:', 'https://a.espncdn.com'],
+        imgSrc: ["'self'", 'data:', 'https://a.espncdn.com', 'https://resources.premierleague.com'],
       },
     },
   })
