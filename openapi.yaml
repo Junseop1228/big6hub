@@ -322,10 +322,10 @@ components:
         published_at:
           type: string
           example: Sat, 07 Jun 2026 14:00:00 GMT
-        summary:
+        description:
           type: string
-          description: AI-generated summary of the article
-          example: Arsenal have completed the signing of a new midfielder...
+          description: Short article description from the RSS feed
+          example: Arsenal's head of sports medicine Dr Zafar Iqbal is leaving after two years at the club.
         created_at:
           type: string
           example: 2026-06-08 12:00:00
