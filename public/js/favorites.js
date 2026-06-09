@@ -88,7 +88,7 @@ async function loadFavorites() {
       if (players.length > 0) {
         scroll.innerHTML = players.map(p => `
           <div class="fav-player-card" data-fav-id="${p.fav_id}">
-            ${p.photo_url ? `<img src="${p.photo_url}" alt="${escapeHtml(p.name)}" class="fav-player-photo"/>` : '<div class="fav-player-photo" style="background:#f0f0f0;"></div>'}
+            <img src="${p.photo_url || ''}" alt="${escapeHtml(p.name)}" class="fav-player-photo" onerror="this.style.display='none'" ${p.photo_url ? '' : 'style="display:none"'}>
             <div class="fav-player-info">
               <a href="player.html?id=${p.id}&slug=${team.slug}" class="fav-player-name">${escapeHtml(p.name)}</a>
               <span class="fav-player-position">${escapeHtml(p.position)}</span>
