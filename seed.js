@@ -5,6 +5,10 @@
  * Also creates the admin account defined in .env.
  *
  * Usage: npm run seed
+ *
+ * Safe to re-run: data tables are cleared before each seed run so
+ * players, seasons, trophies, and managers never accumulate duplicates.
+ * Users, favorites, and news are preserved across runs.
  */
 
 require('dotenv').config();
@@ -17,6 +21,16 @@ async function seed() {
   console.log('[seed] Initializing database...');
   await initDb();
   const db = getDb();
+
+  // ── Clean data tables before re-seeding ──────────────────────────────────
+  // Prevents duplicate rows when seed is re-run without deleting database.db.
+  // Users, favorites, and news are preserved.
+  console.log('[seed] Cleaning data tables...');
+  await db.run('DELETE FROM managers');
+  await db.run('DELETE FROM trophies');
+  await db.run('DELETE FROM seasons');
+  await db.run('DELETE FROM players');
+  // teams uses INSERT OR REPLACE so no need to delete
 
   // ── Admin account ─────────────────────────────────────────────────────────
   const adminEmail    = process.env.ADMIN_EMAIL;
