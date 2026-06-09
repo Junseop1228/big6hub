@@ -11,6 +11,7 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const { initDb, getDb } = require('./db');
 const { fetchAndSeed } = require('./scripts/fetchData');
+const { fetchAndSeedNews } = require('./scripts/fetchNews');
 
 async function seed() {
   console.log('[seed] Initializing database...');
@@ -40,11 +41,22 @@ async function seed() {
   // ── Live data from football-data.org ─────────────────────────────────────
   const summary = await fetchAndSeed();
 
+  // ── News from BBC RSS feeds (non-blocking — failures don't stop the seed) ──
+  console.log('\n[seed] Fetching news from BBC RSS feeds...');
+  let newsCount = 0;
+  try {
+    const newsSummary = await fetchAndSeedNews();
+    newsCount = newsSummary.stored;
+  } catch (err) {
+    console.warn(`[seed] News fetch failed, continuing without news: ${err.message}`);
+  }
+
   console.log('\n[seed] Done.');
   console.log(`  Teams inserted:   ${summary.teamCount}`);
   console.log(`  Players inserted: ${summary.playerCount}`);
   console.log(`  Seasons inserted: ${summary.seasonCount}`);
   console.log(`  Managers inserted:${summary.managerCount}`);
+  console.log(`  News inserted:    ${newsCount}`);
 
   process.exit(0);
 }
