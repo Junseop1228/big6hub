@@ -15,6 +15,8 @@ document.querySelectorAll('.tab-link').forEach(link => {
   });
 });
 
+let allPlayers = [];
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function escapeHtml(str) {
@@ -81,6 +83,7 @@ function renderSquad(players) {
 // ── Render players tab ────────────────────────────────────────────────────────
 
 function renderPlayersTab(players) {
+  allPlayers = players;
   const tbody = document.querySelector('#players .tbl tbody');
   if (!tbody) return;
 
@@ -179,10 +182,28 @@ function renderTrophies(trophies) {
     : '<tr><td colspan="2">No trophy data available.</td></tr>';
 }
 
+function sortPlayers(key) {
+  if (!key) return;
+  const sorted = [...allPlayers].sort((a, b) => 
+    key === 'goals' || key === 'assists' ? (b[key] ?? 0) - (a[key] ?? 0) : a[key] > b[key] ? 1 : -1
+  );
+  const tbody = document.querySelector('#players .tbl tbody');
+  tbody.innerHTML = sorted.map(p => `
+    <tr>
+      <td><a href="player.html?id=${p.id}&slug=${slug}">${escapeHtml(p.name)}</a>${p.is_legend ? '<span class="badge-legend">Legend</span>' : ''}</td>
+      <td>${escapeHtml(p.position)}</td>
+      <td>${p.goals ?? '—'}</td>
+      <td>${p.assists ?? '—'}</td>
+    </tr>
+  `).join('');
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadTeam();
+
+  document.getElementById('player-sort').addEventListener('change', e => sortPlayers(e.target.value));
 
   const moreBtn = document.getElementById('squad-more-btn');
   if (moreBtn) {
