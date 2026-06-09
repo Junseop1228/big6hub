@@ -17,11 +17,11 @@ async function getNews(teamId) {
  * createNews — inserts a news article, skipping duplicates by (team_id, url).
  * Returns the inserted row, or the existing row if this team already has the url.
  *
- * @param {{ team_id, title, url?, source?, published_at?, summary? }} fields
+ * @param {{ team_id, title, url?, source?, published_at?, description? }} fields
  */
 async function createNews(fields) {
   const db = getDb();
-  const { team_id, title, url = null, source = null, published_at = null, summary = null } = fields;
+  const { team_id, title, url = null, source = null, published_at = null, description = null } = fields;
 
   // dedupe by (team_id, url) — skip insert if this team already has this article
   if (url) {
@@ -30,8 +30,8 @@ async function createNews(fields) {
   }
 
   const result = await db.run(
-    'INSERT INTO news (team_id, title, url, source, published_at, summary) VALUES (?, ?, ?, ?, ?, ?)',
-    [team_id, title, url, source, published_at, summary]
+    'INSERT INTO news (team_id, title, url, source, published_at, description) VALUES (?, ?, ?, ?, ?, ?)',
+    [team_id, title, url, source, published_at, description]
   );
   return db.get('SELECT * FROM news WHERE id = ?', [result.lastID]);
 }

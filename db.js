@@ -77,7 +77,7 @@ async function initDb() {
       url          TEXT,
       source       TEXT,
       published_at TEXT,
-      summary      TEXT,
+      description  TEXT,
       created_at   TEXT DEFAULT (datetime('now'))
     );
   `);
