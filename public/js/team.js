@@ -29,7 +29,7 @@ const TEAM_LINKS = {
   arsenal: {
     website: 'https://www.arsenal.com',
     instagram: 'https://www.instagram.com/arsenal',
-    store: 'https://store.arsenal.com',
+    store: 'https://arsenaldirect.arsenal.com',
   },
   chelsea: {
     website: 'https://www.chelseafc.com',
@@ -44,11 +44,11 @@ const TEAM_LINKS = {
   mancity: {
     website: 'https://www.mancity.com',
     instagram: 'https://www.instagram.com/mancity',
-    store: 'https://store.mancity.com',
+    store: 'https://www.mancitystore.com',
   },
   manutd: {
     website: 'https://www.manutd.com',
-    instagram: 'https://www.instagram.com/manchesterunited',
+    instagram: 'https://www.instagram.com/manutd',
     store: 'https://store.manutd.com',
   },
   tottenham: {
