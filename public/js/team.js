@@ -179,4 +179,15 @@ function renderTrophies(trophies) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', loadTeam);
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadTeam();
+  const tabParam = new URLSearchParams(window.location.search).get('tab');
+  if (tabParam) {
+    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const targetLink = document.querySelector(`.tab-link[data-tab="${tabParam}"]`);
+    const targetContent = document.getElementById(tabParam);
+    if (targetLink) targetLink.classList.add('active');
+    if (targetContent) targetContent.classList.add('active');
+  }
+});

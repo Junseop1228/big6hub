@@ -48,7 +48,7 @@ async function loadPlayer() {
     // back link
     const backLink = document.querySelector('.back-link');
     if (backLink) {
-      backLink.href        = 'team.html?slug=' + teamSlug;
+      backLink.href        = 'team.html?slug=' + teamSlug + '&tab=players';
       backLink.textContent = '← ' + teamName;
     }
 
