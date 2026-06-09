@@ -227,7 +227,3 @@ This project was developed with the assistance of **Claude (Anthropic)**, an AI 
 All code was reviewed, understood, and approved by the team before committing.
 Frontend UI/UX design and HTML/CSS were authored by team members.
 Final decisions on architecture, data sources, and features were made by the team.
-
-### Team members who used AI assistance
-
-- **Junseop Kim** (backend, team lead) — primary AI user for backend development
