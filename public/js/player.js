@@ -44,16 +44,9 @@ async function loadPlayer() {
     document.querySelector('h1').textContent = player.name;
     const photoEl = document.getElementById('player-photo');
     if (photoEl) {
-      if (player.photo_url) {
-        photoEl.src = player.photo_url;
-        photoEl.onerror = () => {
-          photoEl.style.display = 'none';
-          const parent = photoEl.parentElement;
-          if (parent) parent.style.background = '#f0f0f0';
-        };
-      } else {
-        photoEl.style.display = 'none';
-      }
+      const placeholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23e5e7eb'/%3E%3Ccircle cx='40' cy='30' r='16' fill='%239ca3af'/%3E%3Cellipse cx='40' cy='72' rx='26' ry='20' fill='%239ca3af'/%3E%3C/svg%3E";
+      photoEl.src = player.photo_url || placeholder;
+      photoEl.onerror = () => { photoEl.src = placeholder; };
     }
     document.querySelector('.meta').textContent = (player.position || '—') + ' · ' + teamName;
     document.title = player.name + ' — Big6Hub';
