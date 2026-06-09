@@ -2,15 +2,16 @@ const { getDb } = require('../db');
 
 /**
  * getSeasons — returns all seasons, optionally filtered by team_id.
+ * Ordered by season DESC so the most recent season comes first.
  *
  * @param {number|null} teamId
  */
 async function getSeasons(teamId) {
   const db = getDb();
   if (teamId) {
-    return db.all('SELECT * FROM seasons WHERE team_id = ?', [teamId]);
+    return db.all('SELECT * FROM seasons WHERE team_id = ? ORDER BY season DESC', [teamId]);
   }
-  return db.all('SELECT * FROM seasons');
+  return db.all('SELECT * FROM seasons ORDER BY season DESC');
 }
 
 /**
